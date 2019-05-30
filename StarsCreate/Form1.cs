@@ -15,6 +15,7 @@ namespace StarsCreate
         private int[,] PixValue;
         private int h, w;
         private Random rd;
+        private Bitmap bm;
 
         public Form1()
         {
@@ -41,7 +42,23 @@ namespace StarsCreate
         {
             h = Convert.ToInt32(textBox1.Text);
             w = Convert.ToInt32(textBox2.Text);
-            PixValue = new int[h, w];
+            PixValue = new int[w, h];
+            bm = new Bitmap(w, h);
+            ValToBitMap();
+
+            //pictureBox1.Image = Image.FromHbitmap(bm.GetHbitmap());
+            pictureBox1.Image = bm;
+        }
+
+        private void ValToBitMap()
+        {
+            for (int index = 0; index < bm.Width; index++)
+            {
+                for (int i = 0; i < bm.Height; i++)
+                {
+                    bm.SetPixel(index, i, Color.FromArgb(PixValue[index, i], PixValue[index, i], PixValue[index, i]));
+                }
+            }
         }
     }
 }
