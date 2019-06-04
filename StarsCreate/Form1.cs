@@ -16,6 +16,21 @@ namespace StarsCreate
         private int h, w;
         private Random rd;
         private Bitmap bm;
+        private Bitmap Imbm;
+
+        /// <summary>
+        /// Функция распределения Гаусса
+        /// </summary>
+        /// <param name="x">Текущая координата</param>
+        /// <param name="d">Ширина расплёска</param>
+        /// <param name="u">Положение максимума энергии</param>
+        /// <returns></returns>
+        private static double Gauss(double x, double d, double u)
+        {
+            double a = 1 / (d * Math.Sqrt(2 * Math.PI));
+            double e = Math.Exp(-(Math.Pow(x - u, 2) / (2 * d * d)));
+            return a * e;
+        }
 
         public Form1()
         {
@@ -40,14 +55,20 @@ namespace StarsCreate
 
         private void Button1_Click(object sender, EventArgs e)
         {
+            pictureBox1.Image = null;
             h = Convert.ToInt32(textBox1.Text);
             w = Convert.ToInt32(textBox2.Text);
             PixValue = new int[w, h];
             bm = new Bitmap(w, h);
+            //Imbm = new Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format16bppGrayScale);
             ValToBitMap();
 
             //pictureBox1.Image = Image.FromHbitmap(bm.GetHbitmap());
             pictureBox1.Image = bm;
+        }
+
+        private void Button2_Click(object sender, EventArgs e)
+        {
         }
 
         private void ValToBitMap()
@@ -57,8 +78,12 @@ namespace StarsCreate
                 for (int i = 0; i < bm.Height; i++)
                 {
                     bm.SetPixel(index, i, Color.FromArgb(PixValue[index, i], PixValue[index, i], PixValue[index, i]));
+                    //Color color = new Color();
+
+                    //bm.SetPixel(index, i,);
                 }
             }
+            //Imbm = new Bitmap(bm);
         }
     }
 }
