@@ -197,6 +197,7 @@ namespace StarsCreate
             int x1, x2, x3, x4;
             int y1, y2, y3, y4;
 
+            // Смотрим, чтоб отрисовка не вышла за границы холста
             x1 = xc + x < PixValue.GetLength(0) ? xc + x : PixValue.GetLength(0) - 1;
             x1 = x1 >= 0 ? x1 : 0;
 
@@ -288,6 +289,7 @@ namespace StarsCreate
             int x1, x2, x3, x4;
             int y1, y2, y3, y4;
 
+            // Смотрим, чтоб отрисовка не вышла за границы холста
             x1 = xc + x < PixValue16.GetLength(0) ? xc + x : PixValue16.GetLength(0) - 1;
             x1 = x1 >= 0 ? x1 : 0;
 
@@ -402,7 +404,7 @@ namespace StarsCreate
         private void CretStarVal()
         {
             double[] znach;
-            int radius = rd.Next(1, Convert.ToInt32(bm.Width / 100));
+            int radius = rd.Next(1, Convert.ToInt32(Math.Min(bm.Width, bm.Height) / 100));
             int x, y;
             x = rd.Next(1, bm.Width);
             y = rd.Next(1, bm.Height);
@@ -423,8 +425,8 @@ namespace StarsCreate
             {
                 int temp = ValZnach(znach[0], Convert.ToInt32(light / 256), znach[i - 1]);
                 int xx = x + i < Imbm.Width ? x + i : Imbm.Width - 1;
-                int col = Imbm.GetPixel(xx, y).G;
-                if (col <= temp)
+                //int col = Imbm.GetPixel(xx, y).G;
+                if (PixValue[xx, y] <= temp)
                 {
                     V_MIcirc(x, y, i, temp);
 
@@ -606,6 +608,7 @@ namespace StarsCreate
             int x1, x2, x3, x4;
             int y1, y2, y3, y4;
 
+            // Смотрим, чтоб отрисовка не вышла за границы холста
             x1 = xc + x < bmp.Width ? xc + x : bmp.Width - 1;
             x1 = x1 >= 0 ? x1 : 0;
 
@@ -724,6 +727,7 @@ namespace StarsCreate
             int x1, x2, x3, x4;
             int y1, y2, y3, y4;
 
+            // Смотрим, чтоб отрисовка не вышла за границы холста
             x1 = xc + x < bmp.Width ? xc + x : bmp.Width - 1;
             x1 = x1 >= 0 ? x1 : 0;
 
