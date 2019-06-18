@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 using System.Windows.Forms;
 using System.Windows.Media.Imaging;
 
@@ -15,11 +16,26 @@ namespace StarsCreate
 {
     public partial class Form1 : Form
     {
-        private int[,] PixValue;
-        private int h, w;
-        private Random rd;
-        private Bitmap bm;
-        private Bitmap Imbm;
+        private long[,] PixValue16; // массив значений пикселей 16 битного холста
+        private long[,] PixValue;   // массив значений пикселей 8 битного холста
+        private int h, w;           // размеры холста
+        private Random rd;          // рандомайзер
+        private Bitmap bm;          // 16 битный холст
+        private Bitmap Imbm;        // 8 битный холст
+        private long kolstars;      // Количество генерируемых звёзд
+
+        /// <summary>
+        /// Вычисляет текущее значение яркости пикселя относительно гауссового распределения
+        /// </summary>
+        /// <param name="Vakslokal">Максимальное значение из вычесленного</param>
+        /// <param name="maxznach">Максимальное значение из нового диапазона</param>
+        /// <param name="value">Текущее значение</param>
+        /// <returns>Текущее значение в новом диапазоне</returns>
+        private static int ValZnach(double Vakslokal, int maxznach, double value)
+        {
+            double t = value * maxznach / Vakslokal;
+            return Convert.ToInt32(t);
+        }
 
         /// <summary>
         /// Функция распределения Гаусса
@@ -61,7 +77,8 @@ namespace StarsCreate
             pictureBox1.Image = null;
             h = Convert.ToInt32(textBox1.Text);
             w = Convert.ToInt32(textBox2.Text);
-            PixValue = new int[w, h];
+            PixValue16 = new long[w, h];
+            PixValue = new long[w, h];
             bm = new Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format16bppGrayScale);
             Imbm = new Bitmap(w, h);
             ValToBitMap();
@@ -70,26 +87,374 @@ namespace StarsCreate
             pictureBox1.Image = Imbm;
         }
 
-        private void Button2_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Перенос значения массива на холст 16 битный
+        /// </summary>
+        private void PixToBit16()
         {
+            ushort temp16;
+
+            for (int i = 0; i < w; i++)
+                for (int j = 0; j < h; j++)
+                {
+                    temp16 = Convert.ToUInt16(PixValue16[i, j]);
+                    bm.SetPixelFor16bit(i, j, temp16);
+                }
+        }
+
+        /// <summary>
+        /// Перенос значения массива на холст 8 битный
+        /// </summary>
+        private void PixToBit8()
+        {
+            int temp;
+
+            for (int i = 0; i < w; i++)
+                for (int j = 0; j < h; j++)
+                {
+                    temp = Convert.ToInt32(PixValue[i, j]);
+                    Imbm.SetPixel(i, j, Color.FromArgb(temp, temp, temp));
+                }
+        }
+
+        /// <summary>
+        /// Переносит значения массивов на холсты
+        /// </summary>
+        private void PixToBitAll()
+        {
+            int temp;
+            ushort temp16;
+
+            for (int i = 0; i < w; i++)
+                for (int j = 0; j < h; j++)
+                {
+                    temp = Convert.ToInt32(PixValue[i, j]);
+                    Imbm.SetPixel(i, j, Color.FromArgb(temp, temp, temp));
+                    temp16 = Convert.ToUInt16(PixValue16[i, j]);
+                    bm.SetPixelFor16bit(i, j, temp16);
+                }
+        }
+
+        /// <summary>
+        /// Подсветка пиксеья и пикселей вокругстоящих, 16бит
+        /// </summary>
+        /// <param name="x">координата по горизонтале</param>
+        /// <param name="y">Координата по вертикале</param>
+        /// <param name="pixel">Яроксть пикселя</param>
+        private void Pixel_circle_cikl(int x, int y, long pixel)
+        {
+            int x1, x2, x3, x4;
+            int y1, y2, y3, y4;
+
+            x1 = x - 1;
+            x2 = x;
+            x3 = x + 1;
+            x4 = x;
+
+            y1 = y;
+            y2 = y - 1;
+            y3 = y;
+            y4 = y + 1;
+
+            x1 = x1 >= 0 ? x1 : 0;
+            x3 = x3 < PixValue.GetLength(0) ? x3 : PixValue.GetLength(0) - 1;
+
+            y2 = y2 >= 0 ? y2 : 0;
+            y4 = y4 < PixValue.GetLength(1) ? y4 : PixValue.GetLength(1) - 1;
+
+            //bmp.SetPixelFor16bit(x, y, ttt);
+            //bmp.SetPixelFor16bit(x1, y1, ttt);
+            //bmp.SetPixelFor16bit(x2, y2, ttt);
+            //bmp.SetPixelFor16bit(x3, y3, ttt);
+            //bmp.SetPixelFor16bit(x4, y4, ttt);
+
+            if (PixValue[x, y] < pixel)
+                PixValue[x, y] = pixel;
+
+            if (PixValue[x1, y1] < pixel)
+                PixValue[x1, y1] = pixel;
+
+            if (PixValue[x2, y2] < pixel)
+                PixValue[x2, y2] = pixel;
+
+            if (PixValue[x3, y3] < pixel)
+                PixValue[x3, y3] = pixel;
+
+            if (PixValue[x4, y4] < pixel)
+                PixValue[x4, y4] = pixel;
+        }
+
+        /// <summary>
+        /// Подсветка определённых пикселей с учётом границ изображения
+        /// </summary>
+        /// <param name="xc"></param>
+        /// <param name="yc"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="pixel"></param>
+        private void Pixel_circle(int xc, int yc, int x, int y, long pixel)
+        {
+            int x1, x2, x3, x4;
+            int y1, y2, y3, y4;
+
+            x1 = xc + x < PixValue.GetLength(0) ? xc + x : PixValue.GetLength(0) - 1;
+            x1 = x1 >= 0 ? x1 : 0;
+
+            x2 = xc + y < PixValue.GetLength(0) ? xc + y : PixValue.GetLength(0) - 1;
+            x2 = x2 >= 0 ? x2 : 0;
+
+            x3 = xc - x < PixValue.GetLength(0) ? xc - x : PixValue.GetLength(0) - 1;
+            x3 = x3 >= 0 ? x3 : 0;
+
+            x4 = xc - y < PixValue.GetLength(0) ? xc - y : PixValue.GetLength(0) - 1;
+            x4 = x4 >= 0 ? x4 : 0;
+
+            y1 = yc + y < PixValue.GetLength(1) ? yc + y : PixValue.GetLength(1) - 1;
+            y1 = y1 >= 0 ? y1 : 0;
+
+            y2 = yc + x < PixValue.GetLength(1) ? yc + x : PixValue.GetLength(1) - 1;
+            y2 = y2 >= 0 ? y2 : 0;
+
+            y3 = yc - x < PixValue.GetLength(1) ? yc - x : PixValue.GetLength(1) - 1;
+            y3 = y3 >= 0 ? y3 : 0;
+
+            y4 = yc - y < PixValue.GetLength(1) ? yc - y : PixValue.GetLength(1) - 1;
+            y4 = y4 >= 0 ? y4 : 0;
+
+            Pixel_circle_cikl(x1, y1, pixel);
+            Pixel_circle_cikl(x2, y2, pixel);
+            Pixel_circle_cikl(x2, y3, pixel);
+            Pixel_circle_cikl(x1, y4, pixel);
+            Pixel_circle_cikl(x3, y4, pixel);
+            Pixel_circle_cikl(x4, y3, pixel);
+            Pixel_circle_cikl(x4, y2, pixel);
+            Pixel_circle_cikl(x3, y1, pixel);
+        }
+
+        private void Pixel_circle16_cikl(int x, int y, long pixel)
+        {
+            ushort ttt = Convert.ToUInt16(pixel);
+            int x1, x2, x3, x4;
+            int y1, y2, y3, y4;
+
+            x1 = x - 1;
+            x2 = x;
+            x3 = x + 1;
+            x4 = x;
+
+            y1 = y;
+            y2 = y - 1;
+            y3 = y;
+            y4 = y + 1;
+
+            x1 = x1 >= 0 ? x1 : 0;
+            x3 = x3 < PixValue16.GetLength(0) ? x3 : PixValue16.GetLength(0) - 1;
+
+            y2 = y2 >= 0 ? y2 : 0;
+            y4 = y4 < PixValue16.GetLength(1) ? y4 : PixValue16.GetLength(1) - 1;
+
+            if (PixValue16[x, y] < pixel)
+                PixValue16[x, y] = pixel;
+
+            if (PixValue16[x1, y1] < pixel)
+                PixValue16[x1, y1] = pixel;
+
+            if (PixValue16[x2, y2] < pixel)
+                PixValue16[x2, y2] = pixel;
+
+            if (PixValue16[x3, y3] < pixel)
+                PixValue16[x3, y3] = pixel;
+
+            if (PixValue16[x4, y4] < pixel)
+                PixValue16[x4, y4] = pixel;
+
+            //bmp.SetPixelFor16bit(x, y, ttt);
+            //bmp.SetPixelFor16bit(x1, y1, ttt);
+            //bmp.SetPixelFor16bit(x2, y2, ttt);
+            //bmp.SetPixelFor16bit(x3, y3, ttt);
+            //bmp.SetPixelFor16bit(x4, y4, ttt);
+        }
+
+        /// <summary>
+        /// Подсветка определённых пикселей с учётом границ изображения, 16 бит
+        /// </summary>
+        /// <param name="xc"></param>
+        /// <param name="yc"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="pixel"></param>
+        private void Pixel_circle16(int xc, int yc, int x, int y, long pixel)
+        {
+            int x1, x2, x3, x4;
+            int y1, y2, y3, y4;
+
+            x1 = xc + x < PixValue16.GetLength(0) ? xc + x : PixValue16.GetLength(0) - 1;
+            x1 = x1 >= 0 ? x1 : 0;
+
+            x2 = xc + y < PixValue16.GetLength(0) ? xc + y : PixValue16.GetLength(0) - 1;
+            x2 = x2 >= 0 ? x2 : 0;
+
+            x3 = xc - x < PixValue16.GetLength(0) ? xc - x : PixValue16.GetLength(0) - 1;
+            x3 = x3 >= 0 ? x3 : 0;
+
+            x4 = xc - y < PixValue16.GetLength(0) ? xc - y : PixValue16.GetLength(0) - 1;
+            x4 = x4 >= 0 ? x4 : 0;
+
+            y1 = yc + y < PixValue16.GetLength(1) ? yc + y : PixValue16.GetLength(1) - 1;
+            y1 = y1 >= 0 ? y1 : 0;
+
+            y2 = yc + x < PixValue16.GetLength(1) ? yc + x : PixValue16.GetLength(1) - 1;
+            y2 = y2 >= 0 ? y2 : 0;
+
+            y3 = yc - x < PixValue16.GetLength(1) ? yc - x : PixValue16.GetLength(1) - 1;
+            y3 = y3 >= 0 ? y3 : 0;
+
+            y4 = yc - y < PixValue16.GetLength(1) ? yc - y : PixValue16.GetLength(1) - 1;
+            y4 = y4 >= 0 ? y4 : 0;
+
+            //ushort ttt = Convert.ToUInt16(pixel);
+
+            Pixel_circle16_cikl(x1, y1, pixel);
+            Pixel_circle16_cikl(x2, y2, pixel);
+            Pixel_circle16_cikl(x2, y3, pixel);
+            Pixel_circle16_cikl(x1, y4, pixel);
+            Pixel_circle16_cikl(x3, y4, pixel);
+            Pixel_circle16_cikl(x4, y3, pixel);
+            Pixel_circle16_cikl(x4, y2, pixel);
+            Pixel_circle16_cikl(x3, y1, pixel);
+
+            //bmp.SetPixelFor16bit(x1, y1, ttt);
+            //bmp.SetPixelFor16bit(x2, y2, ttt);
+            //bmp.SetPixelFor16bit(x2, y3, ttt);
+            //bmp.SetPixelFor16bit(x1, y4, ttt);
+            //bmp.SetPixelFor16bit(x3, y4, ttt);
+            //bmp.SetPixelFor16bit(x4, y3, ttt);
+            //bmp.SetPixelFor16bit(x4, y2, ttt);
+            //bmp.SetPixelFor16bit(x3, y1, ttt);
+
+            //bmp.SetPixel(x1, y1, Color.FromArgb(pixel, pixel, pixel));
+            //bmp.SetPixel(x2, y2, Color.FromArgb(pixel, pixel, pixel));
+            //bmp.SetPixel(x2, y3, Color.FromArgb(pixel, pixel, pixel));
+            //bmp.SetPixel(x1, y4, Color.FromArgb(pixel, pixel, pixel));
+            //bmp.SetPixel(x3, y4, Color.FromArgb(pixel, pixel, pixel));
+            //bmp.SetPixel(x4, y3, Color.FromArgb(pixel, pixel, pixel));
+            //bmp.SetPixel(x4, y2, Color.FromArgb(pixel, pixel, pixel));
+            //bmp.SetPixel(x3, y1, Color.FromArgb(pixel, pixel, pixel));
+        }
+
+        /// <summary>
+        /// Алгоритм попиксельного рендеринга окружности, 16 бит
+        /// </summary>
+        /// <param name="xc">центр окружности по горизонтале</param>
+        /// <param name="yc">центр окружности по вертикале</param>
+        /// <param name="r">Радиус окружности</param>
+        /// <param name="pixel">Яркость окраски</param>
+        private void V_MIcirc16(int xc, int yc, int r, long pixel)
+        {
+            int x = 0, y = r, d = 3 - 2 * r;
+
+            while (x < y)
+            {
+                Pixel_circle16(xc, yc, x, y, pixel);
+                if (d < 0)
+                    d = d + 4 * x + 6;
+                else
+                {
+                    d = d + 4 * (x - y) + 10;
+                    --y;
+                }
+                ++x;
+            }
+            if (x == y)
+                Pixel_circle16(xc, yc, x, y, pixel);
+        }
+
+        /// <summary>
+        /// Алгоритм попиксельного рендеринга окружности
+        /// </summary>
+        /// <param name="xc">центр окружности по горизонтале</param>
+        /// <param name="yc">центр окружности по вертикале</param>
+        /// <param name="r">Радиус окружности</param>
+        /// <param name="pixel">Яркость окраски</param>
+        private void V_MIcirc(int xc, int yc, int r, long pixel)
+        {
+            int x = 0, y = r, d = 3 - 2 * r;
+
+            while (x < y)
+            {
+                Pixel_circle(xc, yc, x, y, pixel);
+                if (d < 0)
+                    d = d + 4 * x + 6;
+                else
+                {
+                    d = d + 4 * (x - y) + 10;
+                    --y;
+                }
+                ++x;
+            }
+            if (x == y)
+                Pixel_circle(xc, yc, x, y, pixel);
+        }
+
+        /// <summary>
+        /// Создать одну звезду в случайном месте
+        /// </summary>
+        private void CretStarVal()
+        {
+            double[] znach;
+            int radius = rd.Next(1, Convert.ToInt32(bm.Width / 100));
             int x, y;
-            x = rd.Next(Convert.ToInt32(bm.Width / 10), bm.Width);
-            y = rd.Next(Convert.ToInt32(bm.Height / 10), bm.Height);
-            int r = 10;
+            x = rd.Next(1, bm.Width);
+            y = rd.Next(1, bm.Height);
+
+            int radgaus = rd.Next(1, 5);
+
+            int light = rd.Next(256, 65535);
 
             //for (int i = 1; i <= 10; i++)
             //   Imbm.V_MIcirc(x, y, i, 255 - (i));
             //Imbm.V_Brezenh(x, y, 10, 255);
+            znach = new double[radius];
 
-            using (Graphics gr = Graphics.FromImage(Imbm))
+            for (int i = 0; i < radius; i++)
+                znach[i] = Gauss(x + i, radgaus, x);
+
+            for (int i = 1; i <= radius; i++)
             {
-                Pen WPwn = new Pen(Color.White, 1);
-                gr.DrawEllipse(WPwn, new Rectangle(x - r, y - r, 2 * r, 2 * r));
+                int temp = ValZnach(znach[0], Convert.ToInt32(light / 256), znach[i - 1]);
+                int xx = x + i < Imbm.Width ? x + i : Imbm.Width - 1;
+                int col = Imbm.GetPixel(xx, y).G;
+                if (col <= temp)
+                {
+                    V_MIcirc(x, y, i, temp);
+
+                    temp = ValZnach(znach[0], light, znach[i - 1]);
+
+                    V_MIcirc16(x, y, i, temp);
+                }
             }
 
-            pictureBox1.Image = Imbm;
+            //using (Graphics gr = Graphics.FromImage(Imbm))
+            //{
+            //    Pen WPwn = new Pen(Color.White, 1);
+            //    gr.DrawEllipse(WPwn, new Rectangle(x - r, y - r, 2 * r, 2 * r));
+            //}
+        }
 
-            //bm.Save16bitBitmapToPng("D:\\1.png");
+        private void Button2_Click(object sender, EventArgs e)
+        {
+            Stopwatch st = new Stopwatch();
+
+            kolstars = rd.Next(100, 500);
+            st.Start();
+            for (long i = 0; i < kolstars; i++)
+                CretStarVal();
+
+            PixToBitAll();
+            st.Stop();
+
+            pictureBox1.Image = Imbm;
+            toolStripStatusLabel1.Text = st.Elapsed.ToString();
         }
 
         private void ValToBitMap()
@@ -112,22 +477,7 @@ namespace StarsCreate
 
         private void Timer1_Tick(object sender, EventArgs e)
         {
-            int x, y;
-            x = rd.Next(1, bm.Width);
-            y = rd.Next(1, bm.Height);
-            int r = 10;
-
-            for (int i = 1; i <= r; i++)
-            {
-                Imbm.V_MIcirc(x, y, i, 255);
-                bm.V_MIcirc16(x, y, i, 65000);
-            }
-            //for (int i = 1; i <= r; i++)
-            //    using (Graphics gr = Graphics.FromImage(Imbm))
-            //    {
-            //        Pen WPwn = new Pen(Color.White, 1);
-            //        gr.DrawEllipse(WPwn, new Rectangle(x - i, y - i, 2 * i, 2 * i));
-            //    }
+            CretStarVal();
 
             pictureBox1.Image = Imbm;
         }
@@ -206,6 +556,51 @@ namespace StarsCreate
             }
         }
 
+        /// <summary>
+        /// Подсветка пиксеья и пикселей вокругстоящих, 16бит
+        /// </summary>
+        /// <param name="bmp">Палитра</param>
+        /// <param name="x">координата по горизонтале</param>
+        /// <param name="y">Координата по вертикале</param>
+        /// <param name="pixel">Яроксть пикселя</param>
+        public static void Pixel_circle16_cikl(this Bitmap bmp, int x, int y, int pixel)
+        {
+            ushort ttt = Convert.ToUInt16(pixel);
+            int x1, x2, x3, x4;
+            int y1, y2, y3, y4;
+
+            x1 = x - 1;
+            x2 = x;
+            x3 = x + 1;
+            x4 = x;
+
+            y1 = y;
+            y2 = y - 1;
+            y3 = y;
+            y4 = y + 1;
+
+            x1 = x1 >= 0 ? x1 : 0;
+            x3 = x3 < bmp.Width ? x3 : bmp.Width - 1;
+
+            y2 = y2 >= 0 ? y2 : 0;
+            y4 = y4 < bmp.Height ? y4 : bmp.Height - 1;
+
+            bmp.SetPixelFor16bit(x, y, ttt);
+            bmp.SetPixelFor16bit(x1, y1, ttt);
+            bmp.SetPixelFor16bit(x2, y2, ttt);
+            bmp.SetPixelFor16bit(x3, y3, ttt);
+            bmp.SetPixelFor16bit(x4, y4, ttt);
+        }
+
+        /// <summary>
+        /// Подсветка определённых пикселей с учётом границ изображения, 16 бит
+        /// </summary>
+        /// <param name="bmp"></param>
+        /// <param name="xc"></param>
+        /// <param name="yc"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="pixel"></param>
         public static void Pixel_circle16(this Bitmap bmp, int xc, int yc, int x, int y, int pixel)
         {
             int x1, x2, x3, x4;
@@ -235,16 +630,25 @@ namespace StarsCreate
             y4 = yc - y < bmp.Height ? yc - y : bmp.Height - 1;
             y4 = y4 >= 0 ? y4 : 0;
 
-            ushort ttt = Convert.ToUInt16(pixel);
+            //ushort ttt = Convert.ToUInt16(pixel);
 
-            bmp.SetPixelFor16bit(x1, y1, ttt);
-            bmp.SetPixelFor16bit(x2, y2, ttt);
-            bmp.SetPixelFor16bit(x2, y3, ttt);
-            bmp.SetPixelFor16bit(x1, y4, ttt);
-            bmp.SetPixelFor16bit(x3, y4, ttt);
-            bmp.SetPixelFor16bit(x4, y3, ttt);
-            bmp.SetPixelFor16bit(x4, y2, ttt);
-            bmp.SetPixelFor16bit(x3, y1, ttt);
+            bmp.Pixel_circle16_cikl(x1, y1, pixel);
+            bmp.Pixel_circle16_cikl(x2, y2, pixel);
+            bmp.Pixel_circle16_cikl(x2, y3, pixel);
+            bmp.Pixel_circle16_cikl(x1, y4, pixel);
+            bmp.Pixel_circle16_cikl(x3, y4, pixel);
+            bmp.Pixel_circle16_cikl(x4, y3, pixel);
+            bmp.Pixel_circle16_cikl(x4, y2, pixel);
+            bmp.Pixel_circle16_cikl(x3, y1, pixel);
+
+            //bmp.SetPixelFor16bit(x1, y1, ttt);
+            //bmp.SetPixelFor16bit(x2, y2, ttt);
+            //bmp.SetPixelFor16bit(x2, y3, ttt);
+            //bmp.SetPixelFor16bit(x1, y4, ttt);
+            //bmp.SetPixelFor16bit(x3, y4, ttt);
+            //bmp.SetPixelFor16bit(x4, y3, ttt);
+            //bmp.SetPixelFor16bit(x4, y2, ttt);
+            //bmp.SetPixelFor16bit(x3, y1, ttt);
 
             //bmp.SetPixel(x1, y1, Color.FromArgb(pixel, pixel, pixel));
             //bmp.SetPixel(x2, y2, Color.FromArgb(pixel, pixel, pixel));
@@ -256,6 +660,65 @@ namespace StarsCreate
             //bmp.SetPixel(x3, y1, Color.FromArgb(pixel, pixel, pixel));
         }
 
+        /// <summary>
+        /// Подсветка пиксеья и пикселей вокругстоящих, 16бит
+        /// </summary>
+        /// <param name="bmp">Палитра</param>
+        /// <param name="x">координата по горизонтале</param>
+        /// <param name="y">Координата по вертикале</param>
+        /// <param name="pixel">Яроксть пикселя</param>
+        public static void Pixel_circle_cikl(this Bitmap bmp, int x, int y, int pixel)
+        {
+            int x1, x2, x3, x4;
+            int y1, y2, y3, y4;
+
+            x1 = x - 1;
+            x2 = x;
+            x3 = x + 1;
+            x4 = x;
+
+            y1 = y;
+            y2 = y - 1;
+            y3 = y;
+            y4 = y + 1;
+
+            x1 = x1 >= 0 ? x1 : 0;
+            x3 = x3 < bmp.Width ? x3 : bmp.Width - 1;
+
+            y2 = y2 >= 0 ? y2 : 0;
+            y4 = y4 < bmp.Height ? y4 : bmp.Height - 1;
+
+            //bmp.SetPixelFor16bit(x, y, ttt);
+            //bmp.SetPixelFor16bit(x1, y1, ttt);
+            //bmp.SetPixelFor16bit(x2, y2, ttt);
+            //bmp.SetPixelFor16bit(x3, y3, ttt);
+            //bmp.SetPixelFor16bit(x4, y4, ttt);
+
+            if (bmp.GetPixel(x, y).G < pixel)
+                bmp.SetPixel(x, y, Color.FromArgb(pixel, pixel, pixel));
+
+            if (bmp.GetPixel(x1, y1).G < pixel)
+                bmp.SetPixel(x1, y1, Color.FromArgb(pixel, pixel, pixel));
+
+            if (bmp.GetPixel(x2, y2).G < pixel)
+                bmp.SetPixel(x2, y2, Color.FromArgb(pixel, pixel, pixel));
+
+            if (bmp.GetPixel(x3, y3).G < pixel)
+                bmp.SetPixel(x3, y3, Color.FromArgb(pixel, pixel, pixel));
+
+            if (bmp.GetPixel(x4, y4).G < pixel)
+                bmp.SetPixel(x4, y4, Color.FromArgb(pixel, pixel, pixel));
+        }
+
+        /// <summary>
+        /// Подсветка определённых пикселей с учётом границ изображения
+        /// </summary>
+        /// <param name="bmp"></param>
+        /// <param name="xc"></param>
+        /// <param name="yc"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="pixel"></param>
         public static void Pixel_circle(this Bitmap bmp, int xc, int yc, int x, int y, int pixel)
         {
             int x1, x2, x3, x4;
@@ -285,16 +748,33 @@ namespace StarsCreate
             y4 = yc - y < bmp.Height ? yc - y : bmp.Height - 1;
             y4 = y4 >= 0 ? y4 : 0;
 
-            bmp.SetPixel(x1, y1, Color.FromArgb(pixel, pixel, pixel));
-            bmp.SetPixel(x2, y2, Color.FromArgb(pixel, pixel, pixel));
-            bmp.SetPixel(x2, y3, Color.FromArgb(pixel, pixel, pixel));
-            bmp.SetPixel(x1, y4, Color.FromArgb(pixel, pixel, pixel));
-            bmp.SetPixel(x3, y4, Color.FromArgb(pixel, pixel, pixel));
-            bmp.SetPixel(x4, y3, Color.FromArgb(pixel, pixel, pixel));
-            bmp.SetPixel(x4, y2, Color.FromArgb(pixel, pixel, pixel));
-            bmp.SetPixel(x3, y1, Color.FromArgb(pixel, pixel, pixel));
+            //bmp.SetPixel(x1, y1, Color.FromArgb(pixel, pixel, pixel));
+            //bmp.SetPixel(x2, y2, Color.FromArgb(pixel, pixel, pixel));
+            //bmp.SetPixel(x2, y3, Color.FromArgb(pixel, pixel, pixel));
+            //bmp.SetPixel(x1, y4, Color.FromArgb(pixel, pixel, pixel));
+            //bmp.SetPixel(x3, y4, Color.FromArgb(pixel, pixel, pixel));
+            //bmp.SetPixel(x4, y3, Color.FromArgb(pixel, pixel, pixel));
+            //bmp.SetPixel(x4, y2, Color.FromArgb(pixel, pixel, pixel));
+            //bmp.SetPixel(x3, y1, Color.FromArgb(pixel, pixel, pixel));
+
+            bmp.Pixel_circle_cikl(x1, y1, pixel);
+            bmp.Pixel_circle_cikl(x2, y2, pixel);
+            bmp.Pixel_circle_cikl(x2, y3, pixel);
+            bmp.Pixel_circle_cikl(x1, y4, pixel);
+            bmp.Pixel_circle_cikl(x3, y4, pixel);
+            bmp.Pixel_circle_cikl(x4, y3, pixel);
+            bmp.Pixel_circle_cikl(x4, y2, pixel);
+            bmp.Pixel_circle_cikl(x3, y1, pixel);
         }
 
+        /// <summary>
+        /// Алгоритм попиксельного рендеринга окружности
+        /// </summary>
+        /// <param name="bmp">Холст</param>
+        /// <param name="xc">центр окружности по горизонтале</param>
+        /// <param name="yc">центр окружности по вертикале</param>
+        /// <param name="r">Радиус окружности</param>
+        /// <param name="pixel">Яркость окраски</param>
         public static void V_MIcirc(this Bitmap bmp, int xc, int yc, int r, int pixel)
         {
             int x = 0, y = r, d = 3 - 2 * r;
@@ -315,6 +795,14 @@ namespace StarsCreate
                 bmp.Pixel_circle(xc, yc, x, y, pixel);
         }
 
+        /// <summary>
+        /// Алгоритм попиксельного рендеринга окружности, 16 бит
+        /// </summary>
+        /// <param name="bmp">Холст</param>
+        /// <param name="xc">центр окружности по горизонтале</param>
+        /// <param name="yc">центр окружности по вертикале</param>
+        /// <param name="r">Радиус окружности</param>
+        /// <param name="pixel">Яркость окраски</param>
         public static void V_MIcirc16(this Bitmap bmp, int xc, int yc, int r, int pixel)
         {
             int x = 0, y = r, d = 3 - 2 * r;
@@ -333,67 +821,6 @@ namespace StarsCreate
             }
             if (x == y)
                 bmp.Pixel_circle16(xc, yc, x, y, pixel);
-        }
-
-        public static void V_Brezenh(this Bitmap bmp, int x, int y, int r, int pixel)
-        {
-            int x1 = 0, y1 = r, yk = 0;
-            int sigma, delta;
-            bool f;
-            delta = 2 * (1 - r);
-
-            int xx1, xx2, yy1, yy2;
-
-            do
-            {
-                xx1 = x + x1 < bmp.Width ? x + x1 : bmp.Width - 1;
-                xx1 = xx1 >= 0 ? xx1 : 0;
-
-                xx2 = x - x1 < bmp.Width ? x - x1 : bmp.Width - 1;
-                xx2 = xx2 >= 0 ? xx2 : 0;
-
-                yy1 = y + y1 < bmp.Height ? y + y1 : bmp.Height - 1;
-                yy1 = yy1 >= 0 ? yy1 : 0;
-
-                yy2 = y - y1 < bmp.Height ? y - y1 : bmp.Height - 1;
-                yy2 = yy2 >= 0 ? yy2 : 0;
-
-                bmp.SetPixel(xx1, yy1, Color.FromArgb(pixel, pixel, pixel));
-                bmp.SetPixel(xx2, yy1, Color.FromArgb(pixel, pixel, pixel));
-                bmp.SetPixel(xx1, yy2, Color.FromArgb(pixel, pixel, pixel));
-                bmp.SetPixel(xx2, yy2, Color.FromArgb(pixel, pixel, pixel));
-
-                f = false;
-                if (y1 < yk)
-                    break;
-                if (delta < 0)
-                {
-                    sigma = 2 * (delta + y1) - 1;
-                    if (sigma <= 0)
-                    {
-                        x1++;
-                        delta += 2 * x1 + 1;
-                        f = true;
-                    }
-                }
-                else
-                    if (delta > 0)
-                {
-                    sigma = 2 * (delta - x1) - 1;
-                    if (sigma > 0)
-                    {
-                        y1--;
-                        delta += 1 - 2 * y1;
-                        f = true;
-                    }
-                }
-                if (!f)
-                {
-                    x1++;
-                    y--;
-                    delta += 2 * (x1 - y1 - 1);
-                }
-            } while (true);
         }
     }
 }
