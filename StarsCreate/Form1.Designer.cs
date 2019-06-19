@@ -46,6 +46,8 @@
             this.button4 = new System.Windows.Forms.Button();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.button5 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -58,7 +60,7 @@
             this.groupBox1.Controls.Add(this.pictureBox1);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(1341, 670);
+            this.groupBox1.Size = new System.Drawing.Size(1366, 670);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Изображение";
@@ -67,7 +69,7 @@
             // 
             this.pictureBox1.Location = new System.Drawing.Point(6, 19);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(1324, 645);
+            this.pictureBox1.Size = new System.Drawing.Size(1354, 645);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
@@ -83,7 +85,7 @@
             this.groupBox2.Controls.Add(this.label1);
             this.groupBox2.Location = new System.Drawing.Point(14, 682);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(1338, 85);
+            this.groupBox2.Size = new System.Drawing.Size(1364, 85);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Параметры";
@@ -155,7 +157,7 @@
             // 
             this.button1.Location = new System.Drawing.Point(941, 786);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.Size = new System.Drawing.Size(58, 23);
             this.button1.TabIndex = 2;
             this.button1.Text = "Создать";
             this.button1.UseVisualStyleBackColor = true;
@@ -163,9 +165,9 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(1022, 786);
+            this.button2.Location = new System.Drawing.Point(1005, 786);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.Size = new System.Drawing.Size(70, 23);
             this.button2.TabIndex = 3;
             this.button2.Text = "Генерация";
             this.button2.UseVisualStyleBackColor = true;
@@ -173,9 +175,9 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(1103, 786);
+            this.button3.Location = new System.Drawing.Point(1081, 786);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(132, 23);
+            this.button3.Size = new System.Drawing.Size(104, 23);
             this.button3.TabIndex = 4;
             this.button3.Text = "Сохранить в PNG";
             this.button3.UseVisualStyleBackColor = true;
@@ -187,9 +189,9 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(1241, 786);
+            this.button4.Location = new System.Drawing.Point(1191, 786);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(111, 23);
+            this.button4.Size = new System.Drawing.Size(109, 23);
             this.button4.TabIndex = 5;
             this.button4.Text = "Начать генерацию";
             this.button4.UseVisualStyleBackColor = true;
@@ -201,7 +203,7 @@
             this.toolStripStatusLabel1});
             this.statusStrip1.Location = new System.Drawing.Point(0, 814);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1365, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(1390, 22);
             this.statusStrip1.TabIndex = 6;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -211,11 +213,30 @@
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(44, 17);
             this.toolStripStatusLabel1.Text = "Старт: ";
             // 
+            // progressBar1
+            // 
+            this.progressBar1.Location = new System.Drawing.Point(12, 773);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(923, 35);
+            this.progressBar1.TabIndex = 7;
+            // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(1303, 786);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(75, 23);
+            this.button5.TabIndex = 8;
+            this.button5.Text = "Отобразить";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.Button5_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1365, 836);
+            this.ClientSize = new System.Drawing.Size(1390, 836);
+            this.Controls.Add(this.button5);
+            this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.button3);
@@ -256,6 +277,8 @@
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.Button button5;
     }
 }
 

@@ -7,6 +7,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Windows.Forms;
@@ -24,6 +25,13 @@ namespace StarsCreate
         private Bitmap Imbm;        // 8 битный холст
         private long kolstars;      // Количество генерируемых звёзд
 
+        // контекст синхронизации
+        private SynchronizationContext uiContext;
+
+        private Thread Thread;
+
+        private Stopwatch st = new Stopwatch();     // для подсчёта времени
+
         /// <summary>
         /// Вычисляет текущее значение яркости пикселя относительно гауссового распределения
         /// </summary>
@@ -35,6 +43,45 @@ namespace StarsCreate
         {
             double t = value * maxznach / Vakslokal;
             return Convert.ToInt32(t);
+        }
+
+        private void ProcessRun(object state)
+        {
+            // вытащим контекст синхронизации
+            SynchronizationContext uiContext = state as SynchronizationContext;
+            //Stopwatch st = new Stopwatch();
+
+            st.Start();
+            for (long i = 0; i < kolstars; i++)
+            {
+                CretStarVal();
+                uiContext.Post(UpdateUI, "WorkProcces");
+            }
+            //PixToBitAll();
+            st.Stop();
+
+            uiContext.Post(UpdateUI, "StopProcces");
+        }
+
+        public void UpdateUI(object state)
+        {
+            string text = state as string;
+
+            switch (text)
+            {
+                case "WorkProcces":
+                    {
+                        progressBar1.PerformStep();
+                        break;
+                    }
+                case "StopProcces":
+                    {
+                        progressBar1.Value = progressBar1.Maximum;
+                        toolStripStatusLabel1.Text = st.Elapsed.ToString();
+
+                        break;
+                    }
+            }
         }
 
         /// <summary>
@@ -445,18 +492,22 @@ namespace StarsCreate
 
         private void Button2_Click(object sender, EventArgs e)
         {
-            Stopwatch st = new Stopwatch();
-
             kolstars = rd.Next(100, 500);
-            st.Start();
-            for (long i = 0; i < kolstars; i++)
-                CretStarVal();
 
-            PixToBitAll();
-            st.Stop();
+            //kolstars = Convert.ToInt32(Math.Pow(10, 7));
+            uiContext = SynchronizationContext.Current;
+            progressBar1.Maximum = Convert.ToInt32(kolstars);
+            Thread = new Thread(ProcessRun);
 
-            pictureBox1.Image = Imbm;
-            toolStripStatusLabel1.Text = st.Elapsed.ToString();
+            Thread.Start(uiContext);
+            //st.Start();
+            //for (long i = 0; i < kolstars; i++)
+            // CretStarVal();
+
+            //PixToBitAll();
+            // st.Stop();
+
+            //pictureBox1.Image = Imbm;
         }
 
         private void ValToBitMap()
@@ -498,6 +549,12 @@ namespace StarsCreate
             }
 
             timer1.Enabled = !timer1.Enabled;
+        }
+
+        private void Button5_Click(object sender, EventArgs e)
+        {
+            PixToBitAll();
+            pictureBox1.Image = Imbm;
         }
 
         private void ValToBitMap16()
