@@ -32,6 +32,8 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.textBox4 = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.trackBar1 = new System.Windows.Forms.TrackBar();
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
@@ -48,6 +50,7 @@
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.button5 = new System.Windows.Forms.Button();
+            this.button6 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -76,6 +79,8 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.textBox4);
+            this.groupBox2.Controls.Add(this.label4);
             this.groupBox2.Controls.Add(this.trackBar1);
             this.groupBox2.Controls.Add(this.textBox3);
             this.groupBox2.Controls.Add(this.label3);
@@ -85,10 +90,27 @@
             this.groupBox2.Controls.Add(this.label1);
             this.groupBox2.Location = new System.Drawing.Point(14, 682);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(1364, 85);
+            this.groupBox2.Size = new System.Drawing.Size(1364, 70);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Параметры";
+            // 
+            // textBox4
+            // 
+            this.textBox4.Location = new System.Drawing.Point(234, 39);
+            this.textBox4.Name = "textBox4";
+            this.textBox4.Size = new System.Drawing.Size(83, 20);
+            this.textBox4.TabIndex = 8;
+            this.textBox4.Text = "60";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(166, 42);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(62, 13);
+            this.label4.TabIndex = 7;
+            this.label4.Text = "Подставка";
             // 
             // trackBar1
             // 
@@ -99,12 +121,13 @@
             this.trackBar1.TabIndex = 6;
             this.trackBar1.Value = 5;
             this.trackBar1.Scroll += new System.EventHandler(this.TrackBar1_Scroll);
+            this.trackBar1.ValueChanged += new System.EventHandler(this.TrackBar1_ValueChanged);
             // 
             // textBox3
             // 
-            this.textBox3.Location = new System.Drawing.Point(217, 13);
+            this.textBox3.Location = new System.Drawing.Point(234, 13);
             this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(100, 20);
+            this.textBox3.Size = new System.Drawing.Size(83, 20);
             this.textBox3.TabIndex = 5;
             this.textBox3.Text = "10";
             // 
@@ -123,7 +146,7 @@
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(100, 20);
             this.textBox2.TabIndex = 1;
-            this.textBox2.Text = "4096";
+            this.textBox2.Text = "2000";
             this.textBox2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TextBox1_KeyPress);
             // 
             // label2
@@ -141,7 +164,7 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(100, 20);
             this.textBox1.TabIndex = 2;
-            this.textBox1.Text = "2048";
+            this.textBox1.Text = "1000";
             this.textBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TextBox1_KeyPress);
             // 
             // label1
@@ -155,9 +178,9 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(941, 786);
+            this.button1.Location = new System.Drawing.Point(941, 758);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(58, 23);
+            this.button1.Size = new System.Drawing.Size(70, 23);
             this.button1.TabIndex = 2;
             this.button1.Text = "Создать";
             this.button1.UseVisualStyleBackColor = true;
@@ -165,7 +188,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(1005, 786);
+            this.button2.Location = new System.Drawing.Point(941, 785);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(70, 23);
             this.button2.TabIndex = 3;
@@ -175,7 +198,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(1081, 786);
+            this.button3.Location = new System.Drawing.Point(1017, 785);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(104, 23);
             this.button3.TabIndex = 4;
@@ -189,11 +212,11 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(1191, 786);
+            this.button4.Location = new System.Drawing.Point(1017, 756);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(109, 23);
+            this.button4.Size = new System.Drawing.Size(104, 23);
             this.button4.TabIndex = 5;
-            this.button4.Text = "Начать генерацию";
+            this.button4.Text = "Добавить шум";
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.Button4_Click);
             // 
@@ -222,7 +245,7 @@
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(1303, 786);
+            this.button5.Location = new System.Drawing.Point(1127, 756);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(75, 23);
             this.button5.TabIndex = 8;
@@ -230,11 +253,22 @@
             this.button5.UseVisualStyleBackColor = true;
             this.button5.Click += new System.EventHandler(this.Button5_Click);
             // 
+            // button6
+            // 
+            this.button6.Location = new System.Drawing.Point(1128, 785);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(75, 23);
+            this.button6.TabIndex = 9;
+            this.button6.Text = "+ Трек";
+            this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.Button6_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1390, 836);
+            this.Controls.Add(this.button6);
             this.Controls.Add(this.button5);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.statusStrip1);
@@ -279,6 +313,9 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.TextBox textBox4;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Button button6;
     }
 }
 

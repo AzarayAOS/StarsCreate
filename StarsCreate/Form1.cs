@@ -17,13 +17,16 @@ namespace StarsCreate
 {
     public partial class Form1 : Form
     {
-        private long[,] PixValue16; // массив значений пикселей 16 битного холста
-        private long[,] PixValue;   // массив значений пикселей 8 битного холста
+        private int[,] PixValue16;  // массив значений пикселей 16 битного холста
+
+        private int[] PixTrack;     // одномерный массив трека
         private int h, w;           // размеры холста
+
         private Random rd;          // рандомайзер
         private Bitmap bm;          // 16 битный холст
         private Bitmap Imbm;        // 8 битный холст
-        private long kolstars;      // Количество генерируемых звёзд
+        private int kolstars;       // Количество генерируемых звёзд
+        private int PodstConst;     // Подставка под матрицу
 
         // контекст синхронизации
         private SynchronizationContext uiContext;
@@ -52,7 +55,7 @@ namespace StarsCreate
             //Stopwatch st = new Stopwatch();
 
             st.Start();
-            for (long i = 0; i < kolstars; i++)
+            for (int i = 0; i < kolstars; i++)
             {
                 CretStarVal();
                 uiContext.Post(UpdateUI, "WorkProcces");
@@ -77,7 +80,7 @@ namespace StarsCreate
                 case "StopProcces":
                     {
                         progressBar1.Value = progressBar1.Maximum;
-                        toolStripStatusLabel1.Text = st.Elapsed.ToString();
+                        toolStripStatusLabel1.Text = "Созданно за " + st.Elapsed.ToString();
 
                         break;
                     }
@@ -124,8 +127,15 @@ namespace StarsCreate
             pictureBox1.Image = null;
             h = Convert.ToInt32(textBox1.Text);
             w = Convert.ToInt32(textBox2.Text);
-            PixValue16 = new long[w, h];
-            PixValue = new long[w, h];
+            PodstConst = Convert.ToInt32(textBox4.Text);
+            PixValue16 = new int[w, h];
+            PixTrack = new int[w * h];
+            //PixValue = new int[w, h];
+
+            for (int i = 0; i < w; i++)
+                for (int j = 0; j < h; j++)
+                    PixValue16[i, j] = PodstConst;
+
             bm = new Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format16bppGrayScale);
             Imbm = new Bitmap(w, h);
             ValToBitMap();
@@ -159,7 +169,7 @@ namespace StarsCreate
             for (int i = 0; i < w; i++)
                 for (int j = 0; j < h; j++)
                 {
-                    temp = Convert.ToInt32(PixValue[i, j]);
+                    temp = Convert.ToInt32(Val16ToVal8(Val16ToVal8(PixValue16[i, j])));
                     Imbm.SetPixel(i, j, Color.FromArgb(temp, temp, temp));
                 }
         }
@@ -175,20 +185,21 @@ namespace StarsCreate
             for (int i = 0; i < w; i++)
                 for (int j = 0; j < h; j++)
                 {
-                    temp = Convert.ToInt32(PixValue[i, j]);
+                    temp = Convert.ToInt32(Val16ToVal8(PixValue16[i, j]));
                     Imbm.SetPixel(i, j, Color.FromArgb(temp, temp, temp));
                     temp16 = Convert.ToUInt16(PixValue16[i, j]);
                     bm.SetPixelFor16bit(i, j, temp16);
                 }
         }
 
+        /*
         /// <summary>
-        /// Подсветка пиксеья и пикселей вокругстоящих, 16бит
+        /// Подсветка пикселя и пикселей вокруг стоящих
         /// </summary>
         /// <param name="x">координата по горизонтале</param>
         /// <param name="y">Координата по вертикале</param>
         /// <param name="pixel">Яроксть пикселя</param>
-        private void Pixel_circle_cikl(int x, int y, long pixel)
+        private void Pixel_circle_cikl(int x, int y, int pixel)
         {
             int x1, x2, x3, x4;
             int y1, y2, y3, y4;
@@ -204,10 +215,10 @@ namespace StarsCreate
             y4 = y + 1;
 
             x1 = x1 >= 0 ? x1 : 0;
-            x3 = x3 < PixValue.GetLength(0) ? x3 : PixValue.GetLength(0) - 1;
+            x3 = x3 < w ? x3 : w - 1;
 
             y2 = y2 >= 0 ? y2 : 0;
-            y4 = y4 < PixValue.GetLength(1) ? y4 : PixValue.GetLength(1) - 1;
+            y4 = y4 < h ? y4 : h - 1;
 
             //bmp.SetPixelFor16bit(x, y, ttt);
             //bmp.SetPixelFor16bit(x1, y1, ttt);
@@ -215,20 +226,20 @@ namespace StarsCreate
             //bmp.SetPixelFor16bit(x3, y3, ttt);
             //bmp.SetPixelFor16bit(x4, y4, ttt);
 
-            if (PixValue[x, y] < pixel)
-                PixValue[x, y] = pixel;
+            if (Val16ToVal8(PixValue16[x, y]) < pixel)
+                Val16ToVal8(PixValue16[x, y]) = pixel;
 
-            if (PixValue[x1, y1] < pixel)
-                PixValue[x1, y1] = pixel;
+            if (Val16ToVal8(PixValue16[x1, y1]) < pixel)
+                Val16ToVal8(PixValue16[x1, y1]) = pixel;
 
-            if (PixValue[x2, y2] < pixel)
-                PixValue[x2, y2] = pixel;
+            if (Val16ToVal8(PixValue16[x2, y2]) < pixel)
+                Val16ToVal8(PixValue16[x2, y2]) = pixel;
 
-            if (PixValue[x3, y3] < pixel)
-                PixValue[x3, y3] = pixel;
+            if (Val16ToVal8(PixValue16[x3, y3]) < pixel)
+                Val16ToVal8(PixValue16[x3, y3]) = pixel;
 
-            if (PixValue[x4, y4] < pixel)
-                PixValue[x4, y4] = pixel;
+            if (Val16ToVal8(PixValue16[x4, y4]) < pixel)
+                Val16ToVal8(PixValue16[x4, y4]) = pixel;
         }
 
         /// <summary>
@@ -239,34 +250,34 @@ namespace StarsCreate
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <param name="pixel"></param>
-        private void Pixel_circle(int xc, int yc, int x, int y, long pixel)
+        private void Pixel_circle(int xc, int yc, int x, int y, int pixel)
         {
             int x1, x2, x3, x4;
             int y1, y2, y3, y4;
 
             // Смотрим, чтоб отрисовка не вышла за границы холста
-            x1 = xc + x < PixValue.GetLength(0) ? xc + x : PixValue.GetLength(0) - 1;
+            x1 = xc + x < w ? xc + x : w - 1;
             x1 = x1 >= 0 ? x1 : 0;
 
-            x2 = xc + y < PixValue.GetLength(0) ? xc + y : PixValue.GetLength(0) - 1;
+            x2 = xc + y < w ? xc + y : w - 1;
             x2 = x2 >= 0 ? x2 : 0;
 
-            x3 = xc - x < PixValue.GetLength(0) ? xc - x : PixValue.GetLength(0) - 1;
+            x3 = xc - x < w ? xc - x : w - 1;
             x3 = x3 >= 0 ? x3 : 0;
 
-            x4 = xc - y < PixValue.GetLength(0) ? xc - y : PixValue.GetLength(0) - 1;
+            x4 = xc - y < w ? xc - y : w - 1;
             x4 = x4 >= 0 ? x4 : 0;
 
-            y1 = yc + y < PixValue.GetLength(1) ? yc + y : PixValue.GetLength(1) - 1;
+            y1 = yc + y < h ? yc + y : h - 1;
             y1 = y1 >= 0 ? y1 : 0;
 
-            y2 = yc + x < PixValue.GetLength(1) ? yc + x : PixValue.GetLength(1) - 1;
+            y2 = yc + x < h ? yc + x : h - 1;
             y2 = y2 >= 0 ? y2 : 0;
 
-            y3 = yc - x < PixValue.GetLength(1) ? yc - x : PixValue.GetLength(1) - 1;
+            y3 = yc - x < h ? yc - x : h - 1;
             y3 = y3 >= 0 ? y3 : 0;
 
-            y4 = yc - y < PixValue.GetLength(1) ? yc - y : PixValue.GetLength(1) - 1;
+            y4 = yc - y < h ? yc - y : h - 1;
             y4 = y4 >= 0 ? y4 : 0;
 
             Pixel_circle_cikl(x1, y1, pixel);
@@ -279,7 +290,15 @@ namespace StarsCreate
             Pixel_circle_cikl(x3, y1, pixel);
         }
 
-        private void Pixel_circle16_cikl(int x, int y, long pixel)
+        */
+
+        /// <summary>
+        /// Подсветка пикселя и пикселей вокруг стоящих, 16бит
+        /// </summary>
+        /// <param name="x">координата по горизонтале</param>
+        /// <param name="y">Координата по вертикале</param>
+        /// <param name="pixel">Яроксть пикселя</param>
+        private void Pixel_circle16_cikl(int x, int y, int pixel)
         {
             ushort ttt = Convert.ToUInt16(pixel);
             int x1, x2, x3, x4;
@@ -296,10 +315,10 @@ namespace StarsCreate
             y4 = y + 1;
 
             x1 = x1 >= 0 ? x1 : 0;
-            x3 = x3 < PixValue16.GetLength(0) ? x3 : PixValue16.GetLength(0) - 1;
+            x3 = x3 < w ? x3 : w - 1;
 
             y2 = y2 >= 0 ? y2 : 0;
-            y4 = y4 < PixValue16.GetLength(1) ? y4 : PixValue16.GetLength(1) - 1;
+            y4 = y4 < h ? y4 : h - 1;
 
             if (PixValue16[x, y] < pixel)
                 PixValue16[x, y] = pixel;
@@ -331,34 +350,34 @@ namespace StarsCreate
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <param name="pixel"></param>
-        private void Pixel_circle16(int xc, int yc, int x, int y, long pixel)
+        private void Pixel_circle16(int xc, int yc, int x, int y, int pixel)
         {
             int x1, x2, x3, x4;
             int y1, y2, y3, y4;
 
             // Смотрим, чтоб отрисовка не вышла за границы холста
-            x1 = xc + x < PixValue16.GetLength(0) ? xc + x : PixValue16.GetLength(0) - 1;
+            x1 = xc + x < w ? xc + x : w - 1;
             x1 = x1 >= 0 ? x1 : 0;
 
-            x2 = xc + y < PixValue16.GetLength(0) ? xc + y : PixValue16.GetLength(0) - 1;
+            x2 = xc + y < w ? xc + y : w - 1;
             x2 = x2 >= 0 ? x2 : 0;
 
-            x3 = xc - x < PixValue16.GetLength(0) ? xc - x : PixValue16.GetLength(0) - 1;
+            x3 = xc - x < w ? xc - x : w - 1;
             x3 = x3 >= 0 ? x3 : 0;
 
-            x4 = xc - y < PixValue16.GetLength(0) ? xc - y : PixValue16.GetLength(0) - 1;
+            x4 = xc - y < w ? xc - y : w - 1;
             x4 = x4 >= 0 ? x4 : 0;
 
-            y1 = yc + y < PixValue16.GetLength(1) ? yc + y : PixValue16.GetLength(1) - 1;
+            y1 = yc + y < h ? yc + y : h - 1;
             y1 = y1 >= 0 ? y1 : 0;
 
-            y2 = yc + x < PixValue16.GetLength(1) ? yc + x : PixValue16.GetLength(1) - 1;
+            y2 = yc + x < h ? yc + x : h - 1;
             y2 = y2 >= 0 ? y2 : 0;
 
-            y3 = yc - x < PixValue16.GetLength(1) ? yc - x : PixValue16.GetLength(1) - 1;
+            y3 = yc - x < h ? yc - x : h - 1;
             y3 = y3 >= 0 ? y3 : 0;
 
-            y4 = yc - y < PixValue16.GetLength(1) ? yc - y : PixValue16.GetLength(1) - 1;
+            y4 = yc - y < h ? yc - y : h - 1;
             y4 = y4 >= 0 ? y4 : 0;
 
             //ushort ttt = Convert.ToUInt16(pixel);
@@ -398,7 +417,7 @@ namespace StarsCreate
         /// <param name="yc">центр окружности по вертикале</param>
         /// <param name="r">Радиус окружности</param>
         /// <param name="pixel">Яркость окраски</param>
-        private void V_MIcirc16(int xc, int yc, int r, long pixel)
+        private void V_MIcirc16(int xc, int yc, int r, int pixel)
         {
             int x = 0, y = r, d = 3 - 2 * r;
 
@@ -419,13 +438,25 @@ namespace StarsCreate
         }
 
         /// <summary>
+        /// Перевод значения пикслеля из 16 битного варианта
+        /// в 8битный вариант, пропорцеонально
+        /// </summary>
+        /// <param name="x">значения пиксиля в 16битном варианте</param>
+        /// <returns>выозращает пропорцеональное значение <paramref name="x"/> в 8битном формате.</returns>
+        private int Val16ToVal8(int x)
+        {
+            return Convert.ToInt32((255 * x) / 65535);
+        }
+
+        /*
+        /// <summary>
         /// Алгоритм попиксельного рендеринга окружности
         /// </summary>
         /// <param name="xc">центр окружности по горизонтале</param>
         /// <param name="yc">центр окружности по вертикале</param>
         /// <param name="r">Радиус окружности</param>
         /// <param name="pixel">Яркость окраски</param>
-        private void V_MIcirc(int xc, int yc, int r, long pixel)
+        private void V_MIcirc(int xc, int yc, int r, int pixel)
         {
             int x = 0, y = r, d = 3 - 2 * r;
 
@@ -444,6 +475,8 @@ namespace StarsCreate
             if (x == y)
                 Pixel_circle(xc, yc, x, y, pixel);
         }
+
+        */
 
         /// <summary>
         /// Создать одну звезду в случайном месте
@@ -473,9 +506,9 @@ namespace StarsCreate
                 int temp = ValZnach(znach[0], Convert.ToInt32(light / 256), znach[i - 1]);
                 int xx = x + i < Imbm.Width ? x + i : Imbm.Width - 1;
                 //int col = Imbm.GetPixel(xx, y).G;
-                if (PixValue[xx, y] <= temp)
+                if (Val16ToVal8(PixValue16[xx, y]) <= temp)
                 {
-                    V_MIcirc(x, y, i, temp);
+                    //V_MIcirc(x, y, i, temp);
 
                     temp = ValZnach(znach[0], light, znach[i - 1]);
 
@@ -501,12 +534,12 @@ namespace StarsCreate
 
             Thread.Start(uiContext);
             //st.Start();
-            //for (long i = 0; i < kolstars; i++)
+            //for (int i = 0; i < kolstars; i++)
             // CretStarVal();
 
             //PixToBitAll();
             // st.Stop();
-
+            ;
             //pictureBox1.Image = Imbm;
         }
 
@@ -535,38 +568,80 @@ namespace StarsCreate
             pictureBox1.Image = Imbm;
         }
 
+        /// <summary>
+        /// Первод двумерного массива в одномерный
+        /// </summary>
+        private int[] Mass2To1(int[,] m2)
+        {
+            int[] m1 = new int[w * h];
+            int z = 0;
+            for (int i = 0; i < 10; i++)
+                for (int j = 0; j < 10; j++)
+                {
+                    m1[z] = m2[i, j];
+                    z++;
+                }
+
+            return m1;
+        }
+
+        /// <summary>
+        /// Перевод одномерного массива в двумерный
+        /// </summary>
+        private int[,] Mass1To2(int[] m1)
+        {
+            int[,] m2 = new int[w, h];
+
+            int z = 0;
+
+            for (int i = 0; i < 10; i++)
+                for (int j = 0; j < 10; j++)
+                {
+                    m2[i, j] = m1[z];
+                    z++;
+                }
+
+            return m2;
+        }
+
         private void Button4_Click(object sender, EventArgs e)
         {
-            if (timer1.Enabled)
-            {
-                // выключение таймера
-                button4.Text = "Начать генерацию";
-            }
-            else
-            {
-                // включение таймера
-                button4.Text = "Остановить генерацию";
-            }
+            //if (timer1.Enabled)
+            //{
+            //    // выключение таймера
+            //    button4.Text = "Начать генерацию";
+            //}
+            //else
+            //{
+            //    // включение таймера
+            //    button4.Text = "Остановить генерацию";
+            //}
 
-            timer1.Enabled = !timer1.Enabled;
+            //timer1.Enabled = !timer1.Enabled;
+
+            // Create_on_Gauss.AddGaussianNoise(ref PixValue16, 50);
+
+            PixValue16 = Mass1To2(Create_on_Gauss.AddGaussianNoise(Mass2To1(PixValue16), 50));
+            ;
         }
 
         private void Button5_Click(object sender, EventArgs e)
         {
+            st.Start();
             PixToBitAll();
+            st.Stop();
+            toolStripStatusLabel1.Text = "Отображено за " + st.Elapsed.ToString();
             pictureBox1.Image = Imbm;
         }
 
-        private void ValToBitMap16()
+        private void Button6_Click(object sender, EventArgs e)
         {
-            for (int i = 0; i < bm.Height; i++)
-            {
-                for (int j = 0; j < bm.Width; j++)
-                {
-                    bm.SetPixelFor16bit(j, i, (ushort)(i * j * 65556 / bm.Width / bm.Height));
-                }
-            }
-            //Imbm = new Bitmap(bm);
+            // генерация трека на изображении
+        }
+
+        private void TrackBar1_ValueChanged(object sender, EventArgs e)
+        {
+            textBox3.Text = trackBar1.Value.ToString();
         }
     }
 
@@ -607,7 +682,7 @@ namespace StarsCreate
                 bd.Width, bd.Height, bmp.HorizontalResolution, bmp.VerticalResolution,
                 System.Windows.Media.PixelFormats.Gray16, null, bd.Scan0, bd.Stride * bd.Height, bd.Stride);
             bmp.UnlockBits(bd);
-            using (var stream = new FileStream(file, FileMode.Create))
+            using (FileStream stream = new FileStream(file, FileMode.Create))
             {
                 var encoder = new PngBitmapEncoder();
                 encoder.Frames.Add(BitmapFrame.Create(source));
