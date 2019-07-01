@@ -19,7 +19,7 @@ namespace StarsCreate
     {
         private int[,] PixValue16;  // массив значений пикселей 16 битного холста
 
-        private int[] PixTrack;     // одномерный массив трека
+        private double[] PixTrack;     // одномерный массив трека
         private int h, w;           // размеры холста
 
         private Random rd;          // рандомайзер
@@ -27,6 +27,9 @@ namespace StarsCreate
         private Bitmap Imbm;        // 8 битный холст
         private int kolstars;       // Количество генерируемых звёзд
         private int PodstConst;     // Подставка под матрицу
+        public double Et = 20000;
+        public int spp = 4;
+        public double sigm = 1;
 
         // контекст синхронизации
         private SynchronizationContext uiContext;
@@ -129,9 +132,10 @@ namespace StarsCreate
             w = Convert.ToInt32(textBox2.Text);
             PodstConst = Convert.ToInt32(textBox4.Text);
             PixValue16 = new int[w, h];
-            PixTrack = new int[w * h];
+            PixTrack = new double[w * h];
             //PixValue = new int[w, h];
 
+            trackBar1.Maximum = Convert.ToInt32(textBox4.Text);
             for (int i = 0; i < w; i++)
                 for (int j = 0; j < h; j++)
                     PixValue16[i, j] = PodstConst;
@@ -575,8 +579,8 @@ namespace StarsCreate
         {
             int[] m1 = new int[w * h];
             int z = 0;
-            for (int i = 0; i < 10; i++)
-                for (int j = 0; j < 10; j++)
+            for (int i = 0; i < w; i++)
+                for (int j = 0; j < h; j++)
                 {
                     m1[z] = m2[i, j];
                     z++;
@@ -594,8 +598,8 @@ namespace StarsCreate
 
             int z = 0;
 
-            for (int i = 0; i < 10; i++)
-                for (int j = 0; j < 10; j++)
+            for (int i = 0; i < w; i++)
+                for (int j = 0; j < h; j++)
                 {
                     m2[i, j] = m1[z];
                     z++;
@@ -621,8 +625,7 @@ namespace StarsCreate
 
             // Create_on_Gauss.AddGaussianNoise(ref PixValue16, 50);
 
-            PixValue16 = Mass1To2(Create_on_Gauss.AddGaussianNoise(Mass2To1(PixValue16), 50));
-            ;
+            PixValue16 = Mass1To2(Create_on_Gauss.AddGaussianNoise(Mass2To1(PixValue16), Convert.ToInt32(textBox3.Text)));
         }
 
         private void Button5_Click(object sender, EventArgs e)
@@ -637,6 +640,14 @@ namespace StarsCreate
         private void Button6_Click(object sender, EventArgs e)
         {
             // генерация трека на изображении
+
+            Create_on_Gauss.Render_Line(PixTrack, pitch: 1, 100, 100, 200, 200, 110, 110, 190, 190, ref Et, sigm, spp);
+
+            // перенос рендеренной линии на изображение
+            for (int i = 0; i < w; i++)
+                for (int j = 0; j < h; j++)
+                {
+                }
         }
 
         private void TrackBar1_ValueChanged(object sender, EventArgs e)
