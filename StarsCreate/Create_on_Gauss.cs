@@ -112,13 +112,13 @@ namespace StarsCreate
             for (int jy = jy_f - 1; jy <= jy_l; ++jy)
             {
                 double t = (Convert.ToDouble(jy) + 0.5 - yp) * c;
-                erf_linex[jy - jy_f + 1] = Erf(t);
+                erf_liney[jy - jy_f + 1] = Erf(t);
             }
-
+            ;
             for (int ix = ix_f - 1; ix <= ix_l; ++ix)
             {
                 double t = (Convert.ToDouble(ix) + 0.5 - xp) * c;
-                erf_linex[ix_f - ix_f + 1] = Erf(t);
+                erf_linex[ix - ix_f + 1] = Erf(t);
             }
 
             Et *= 0.25;
@@ -127,8 +127,9 @@ namespace StarsCreate
                 for (int ix = ix_f; ix <= ix_l; ++ix)
                 {
                     frame[jy * pitch + ix] += Et * (erf_liney[jy - jy_f + 1] - erf_liney[jy - jy_f])
-                        * (erf_linex[ix - ix_f + 1] - erf_linex[ix - ix_f]);
+                                                 * (erf_linex[ix - ix_f + 1] - erf_linex[ix - ix_f]);
                 }
+            ;
         }
 
         /// <summary>

@@ -27,7 +27,7 @@ namespace StarsCreate
         private Bitmap Imbm;        // 8 битный холст
         private int kolstars;       // Количество генерируемых звёзд
         private int PodstConst;     // Подставка под матрицу
-        public double Et = 20000;
+        public double Et = 800000;
         public int spp = 4;
         public double sigm = 1;
 
@@ -641,13 +641,23 @@ namespace StarsCreate
         {
             // генерация трека на изображении
 
-            Create_on_Gauss.Render_Line(PixTrack, pitch: 1, 100, 100, 200, 200, 110, 110, 190, 190, ref Et, sigm, spp);
-
+            Create_on_Gauss.Render_Line(PixTrack, pitch: 2, 100, 100, 200, 200, 110, 110, 190, 190, ref Et, sigm, spp);
+            int z = 0;
+            int count = 0;
             // перенос рендеренной линии на изображение
             for (int i = 0; i < w; i++)
                 for (int j = 0; j < h; j++)
                 {
+                    if (PixValue16[i, j] < (PixTrack[z] /*+ PodstConst*/))
+                    {
+                        PixValue16[i, j] = Convert.ToInt32(PixTrack[z] /*+ PodstConst*/);
+                        count++;
+                    }
+
+                    z++;
                 }
+
+            ;
         }
 
         private void TrackBar1_ValueChanged(object sender, EventArgs e)
