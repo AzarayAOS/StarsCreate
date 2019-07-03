@@ -27,7 +27,7 @@ namespace StarsCreate
         private Bitmap Imbm;        // 8 битный холст
         private int kolstars;       // Количество генерируемых звёзд
         private int PodstConst;     // Подставка под матрицу
-        public double Et = 800000;
+        public double Et = 200000;
         public int spp = 4;
         public double sigm = 1;
 
@@ -641,16 +641,40 @@ namespace StarsCreate
         {
             // генерация трека на изображении
 
-            Create_on_Gauss.Render_Line(PixTrack, pitch: 2, 100, 100, 200, 200, 110, 110, 190, 190, ref Et, sigm, spp);
+            //Create_on_Gauss.Render_Line(PixTrack, pitch: 2, 100, 100, 200, 200, 110, 110, 190, 190, ref Et, sigm, spp);
             int z = 0;
             int count = 0;
+
+            int x0, y0, x1, y1;
+
+            x0 = rd.Next(500) + 1;
+            y0 = rd.Next(500) + 1;
+            x1 = rd.Next(500) + 1;
+            y1 = rd.Next(500) + 1;
+
+            int fx = 1;
+            int fy = 1;
+            int lx = w - 1;
+            int ly = h - 1;
+
+            double len;
+
+            while ((len = Math.Sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0))) < 20)
+            {
+                y1 = rd.Next(60) + 1;
+            }
+            ;
+            PNG_Trace_adder.RenderLine(ref PixTrack, fx, fy, lx, ly, x0, y0, x1, y1, ref Et, sigm, spp, w, h);
+
+            ;
             // перенос рендеренной линии на изображение
             for (int i = 0; i < w; i++)
                 for (int j = 0; j < h; j++)
                 {
-                    if (PixValue16[i, j] < (PixTrack[z] /*+ PodstConst*/))
+                    //if (PixValue16[i, j] < (PixTrack[z] /*+ PodstConst*/))
+                    //if (PixTrack[z] > 0)
                     {
-                        PixValue16[i, j] = Convert.ToInt32(PixTrack[z] /*+ PodstConst*/);
+                        PixValue16[i, j] = Convert.ToInt32(PixTrack[z] /*+ PodstConst*/) + PixValue16[i, j];
                         count++;
                     }
 
