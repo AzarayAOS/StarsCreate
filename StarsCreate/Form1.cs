@@ -27,7 +27,7 @@ namespace StarsCreate
         private Bitmap Imbm;        // 8 битный холст
         private int kolstars;       // Количество генерируемых звёзд
         private int PodstConst;     // Подставка под матрицу
-        public double Et = 200000;
+        public double Et = 20000;
         public int spp = 4;
         public double sigm = 1;
 
@@ -664,7 +664,8 @@ namespace StarsCreate
                 y1 = rd.Next(60) + 1;
             }
             ;
-            PNG_Trace_adder.RenderLine(ref PixTrack, fx, fy, lx, ly, x0, y0, x1, y1, ref Et, sigm, spp, w, h);
+            //PNG_Trace_adder.RenderLine(ref PixTrack, fx, fy, lx, ly, x0, y0, x1, y1, ref Et, sigm, spp, w, h);
+            PNG_Trace_adder.RenderLine(ref PixTrack, 1, 1, 511, 511, 4.0, 64.0, 30.0, 47.0, ref Et, 1.0, 4, 512, 512);
 
             ;
             // перенос рендеренной линии на изображение
