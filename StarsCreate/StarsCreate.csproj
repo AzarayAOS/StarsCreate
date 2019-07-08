@@ -52,7 +52,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Create_on_Gauss.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>

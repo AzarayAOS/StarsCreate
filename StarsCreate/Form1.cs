@@ -19,7 +19,7 @@ namespace StarsCreate
     {
         private int[,] PixValue16;  // массив значений пикселей 16 битного холста
 
-        private double[] PixTrack;     // одномерный массив трека
+        private float[] PixTrack;     // одномерный массив трека
         private int h, w;           // размеры холста
 
         private Random rd;          // рандомайзер
@@ -27,7 +27,7 @@ namespace StarsCreate
         private Bitmap Imbm;        // 8 битный холст
         private int kolstars;       // Количество генерируемых звёзд
         private int PodstConst;     // Подставка под матрицу
-        public double Et = 20000;
+        public float Et = 200000;
         public int spp = 4;
         public double sigm = 1;
 
@@ -132,7 +132,7 @@ namespace StarsCreate
             w = Convert.ToInt32(textBox2.Text);
             PodstConst = Convert.ToInt32(textBox4.Text);
             PixValue16 = new int[w, h];
-            PixTrack = new double[w * h];
+            PixTrack = new float[w * h];
             //PixValue = new int[w, h];
 
             trackBar1.Maximum = Convert.ToInt32(textBox4.Text);
@@ -562,7 +562,7 @@ namespace StarsCreate
         {
             pictureBox1.Image = null;
             pictureBox1.Image = Imbm;
-            bm.Save16bitBitmapToPng("D:\\1.png");
+            bm.Save16bitBitmapToPng("D:\\JavaStarTrak\\Nikita\\Output_png\\1.png");
         }
 
         private void Timer1_Tick(object sender, EventArgs e)
@@ -625,7 +625,8 @@ namespace StarsCreate
 
             // Create_on_Gauss.AddGaussianNoise(ref PixValue16, 50);
 
-            PixValue16 = Mass1To2(Create_on_Gauss.AddGaussianNoise(Mass2To1(PixValue16), Convert.ToInt32(textBox3.Text)));
+            //PixValue16 = Mass1To2(Create_on_Gauss.AddGaussianNoise(Mass2To1(PixValue16), Convert.ToInt32(textBox3.Text)));
+            PixValue16 = Mass1To2(PNG_Trace_adder.AddGaussianNoise(Mass2To1(PixValue16), Convert.ToInt32(textBox3.Text)));
         }
 
         private void Button5_Click(object sender, EventArgs e)
@@ -665,7 +666,7 @@ namespace StarsCreate
             }
             ;
             //PNG_Trace_adder.RenderLine(ref PixTrack, fx, fy, lx, ly, x0, y0, x1, y1, ref Et, sigm, spp, w, h);
-            PNG_Trace_adder.RenderLine(ref PixTrack, 1, 1, 511, 511, 4.0, 64.0, 30.0, 47.0, ref Et, 1.0, 4, 512, 512);
+            PNG_Trace_adder.RenderLine(ref PixTrack, 1, 1, 511, 511, 4.0f, 64.0f, 30.0f, 47.0f, Et, 1.0f, 4, 512, 512);
 
             ;
             // перенос рендеренной линии на изображение
@@ -683,6 +684,10 @@ namespace StarsCreate
                 }
 
             ;
+        }
+
+        private void TextBox4_TextChanged(object sender, EventArgs e)
+        {
         }
 
         private void TrackBar1_ValueChanged(object sender, EventArgs e)
