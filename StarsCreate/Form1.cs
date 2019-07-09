@@ -27,9 +27,9 @@ namespace StarsCreate
         private Bitmap Imbm;        // 8 битный холст
         private int kolstars;       // Количество генерируемых звёзд
         private int PodstConst;     // Подставка под матрицу
-        public float Et = 200000;
+        public float Et;
         public int spp = 4;
-        public double sigm = 1;
+        public float sigm = 1;
 
         // контекст синхронизации
         private SynchronizationContext uiContext;
@@ -83,7 +83,7 @@ namespace StarsCreate
                 case "StopProcces":
                     {
                         progressBar1.Value = progressBar1.Maximum;
-                        toolStripStatusLabel1.Text = "Созданно за " + st.Elapsed.ToString();
+                        toolStripStatusLabel1.Text = "Создано за " + st.Elapsed.ToString();
 
                         break;
                     }
@@ -131,6 +131,8 @@ namespace StarsCreate
             h = Convert.ToInt32(textBox1.Text);
             w = Convert.ToInt32(textBox2.Text);
             PodstConst = Convert.ToInt32(textBox4.Text);
+
+            Et = Convert.ToSingle(textBox5.Text);
             PixValue16 = new int[w, h];
             PixTrack = new float[w * h];
             //PixValue = new int[w, h];
@@ -190,8 +192,11 @@ namespace StarsCreate
                 for (int j = 0; j < h; j++)
                 {
                     temp = Convert.ToInt32(Val16ToVal8(PixValue16[i, j]));
+                    temp = temp >= 0 ? temp : 0;
+                    temp = temp <= 255 ? temp : 255;
                     Imbm.SetPixel(i, j, Color.FromArgb(temp, temp, temp));
-                    temp16 = Convert.ToUInt16(PixValue16[i, j]);
+
+                    temp16 = Convert.ToUInt16(PixValue16[i, j] >= 0 ? (PixValue16[i, j] <= 65535 ? PixValue16[i, j] : 65535) : 0);
                     bm.SetPixelFor16bit(i, j, temp16);
                 }
         }
@@ -641,7 +646,7 @@ namespace StarsCreate
         private void Button6_Click(object sender, EventArgs e)
         {
             // генерация трека на изображении
-
+            Et = Convert.ToSingle(textBox5.Text);
             //Create_on_Gauss.Render_Line(PixTrack, pitch: 2, 100, 100, 200, 200, 110, 110, 190, 190, ref Et, sigm, spp);
             int z = 0;
             int count = 0;
@@ -662,11 +667,11 @@ namespace StarsCreate
 
             while ((len = Math.Sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0))) < 20)
             {
-                y1 = rd.Next(60) + 1;
+                y1 = rd.Next(500) + 1;
             }
             ;
-            //PNG_Trace_adder.RenderLine(ref PixTrack, fx, fy, lx, ly, x0, y0, x1, y1, ref Et, sigm, spp, w, h);
-            PNG_Trace_adder.RenderLine(ref PixTrack, 1, 1, 511, 511, 4.0f, 64.0f, 30.0f, 47.0f, Et, 1.0f, 4, 512, 512);
+            //PNG_Trace_adder.RenderLine(ref PixTrack, fx, fy, lx, ly, x0, y0, x1, y1, Et, sigm, spp, w, h);
+            PNG_Trace_adder.RenderLine(ref PixTrack, 1, 1, 511, 511, 4.0f, 10.0f, 30.0f, 47.0f, Et, 1.0f, 4, w, h);
 
             ;
             // перенос рендеренной линии на изображение
@@ -688,6 +693,42 @@ namespace StarsCreate
 
         private void TextBox4_TextChanged(object sender, EventArgs e)
         {
+        }
+
+        private void TextBox3_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            char number = e.KeyChar;
+            if (!Char.IsDigit(number) && number != 8) // цифры и клавиша BackSpace
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void TextBox4_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            char number = e.KeyChar;
+            if (!Char.IsDigit(number) && number != 8) // цифры и клавиша BackSpace
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void TextBox3_TextChanged(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(textBox3.Text))
+            {
+                int a = Convert.ToInt32(textBox3.Text);
+                if (a > PodstConst) textBox3.Text = PodstConst.ToString();
+            }
+        }
+
+        private void TextBox5_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            char number = e.KeyChar;
+            if (!Char.IsDigit(number) && number != 8) // цифры и клавиша BackSpace
+            {
+                e.Handled = true;
+            }
         }
 
         private void TrackBar1_ValueChanged(object sender, EventArgs e)
@@ -847,12 +888,12 @@ namespace StarsCreate
         }
 
         /// <summary>
-        /// Подсветка пиксеья и пикселей вокругстоящих, 16бит
+        /// Подсветка пикселя и пикселей вокруг стоящих, 16бит
         /// </summary>
         /// <param name="bmp">Палитра</param>
-        /// <param name="x">координата по горизонтале</param>
+        /// <param name="x">координата по горизонталь</param>
         /// <param name="y">Координата по вертикале</param>
-        /// <param name="pixel">Яроксть пикселя</param>
+        /// <param name="pixel">Яркость пикселя</param>
         public static void Pixel_circle_cikl(this Bitmap bmp, int x, int y, int pixel)
         {
             int x1, x2, x3, x4;
