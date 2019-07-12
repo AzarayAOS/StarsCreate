@@ -174,7 +174,7 @@ namespace StarsCreate
             y1 = y0 + y;
 
             //PNG_Trace_adder.RenderLine(ref PixTrack, fx, fy, lx, ly, x0, y0, x1, y1, Et, sigm, spp, w, h);
-            PNG_Trace_adder.RenderLine(ref PixTrack, 1, 1, 511, 511, 4.0f, 10.0f, 30.0f, 47.0f, Et, 1.0f, 4, W, H);
+            PNG_Trace_adder.RenderLine(ref PixTrack, x0, y0, x1, y1, x0, y0, x1, y1, Et, 1.0f, 4, W, H);
 
             // перенос рендеренной линии на изображение
             for (int i = 0; i < W; i++)
