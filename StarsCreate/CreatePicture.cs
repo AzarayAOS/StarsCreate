@@ -1,26 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Diagnostics;
-using System.Windows.Forms;
-using System.Windows.Media.Imaging;
 
 namespace StarsCreate
 {
     /// <summary>
     /// Класс, в котором генерируется одно изображение.
     /// </summary>
-    internal class CreatePicture
+    public class CreatePicture
     {
         private int[,] PixValue16;      // массив значений пикселей 16 битного холста
+
+        private int[,] Noiz16;          // массив шума
 
         private float[] PixTrack;       // одномерный массив трека
 
@@ -31,8 +21,9 @@ namespace StarsCreate
         public int Noise { get; set; }  // шум на изображение
         private Random rd;          // рандомайзер
         private Bitmap bm;          // 16 битный холст
-        private Bitmap Imbm;        // 8 битный холст
+
         public int Kolstars { get; set; }           // Количество генерируемых звёзд
+
         public int PodstConst { get; set; }         // Подставка под матрицу
 
         public float Et { get; set; }               // Энергия трека
@@ -61,7 +52,10 @@ namespace StarsCreate
             this.Spp = spp;
             this.Sigm = sigm;
 
+            rd = new Random();
+
             PixValue16 = new int[W, H];
+            Noiz16 = new int[W, H];
             PixTrack = new float[W * H];
 
             for (int i = 0; i < W; i++)
@@ -69,9 +63,24 @@ namespace StarsCreate
                     PixValue16[i, j] = this.PodstConst;
 
             bm = new Bitmap(W, H, System.Drawing.Imaging.PixelFormat.Format16bppGrayScale);
-            Imbm = new Bitmap(W, H);
+        }
 
-            //ValToBitMap();
+        /// <summary>
+        /// Возвращает массив пикселей
+        /// </summary>
+        /// <returns></returns>
+        public int[,] getPixel16()
+        {
+            return PixValue16;
+        }
+
+        /// <summary>
+        /// Возвращает карту пикселей
+        /// </summary>
+        /// <returns></returns>
+        public Bitmap GetBitmap()
+        {
+            return bm;
         }
 
         /// <summary>
@@ -86,9 +95,14 @@ namespace StarsCreate
         /// <summary>
         /// Добавить шум на изображение
         /// </summary>
-        private void AddNoise()
+        public void AddNoise()
         {
-            PixValue16 = Mass1To2(PNG_Trace_adder.AddGaussianNoise(Mass2To1(PixValue16), Noise));
+            Noiz16 = Mass1To2(PNG_Trace_adder.AddGaussianNoise(Mass2To1(PixValue16), Noise));
+
+            for (int i = 0; i < W; i++)
+                for (int j = 0; j < H; j++)
+                    if (PixValue16[i, j] < Noiz16[i, j])
+                        PixValue16[i, j] = Noiz16[i, j];
         }
 
         /// <summary>
@@ -144,20 +158,19 @@ namespace StarsCreate
                 for (int j = 0; j < H; j++)
                 {
                     temp = Convert.ToInt32(Val16ToVal8(Val16ToVal8(PixValue16[i, j])));
-                    Imbm.SetPixel(i, j, Color.FromArgb(temp, temp, temp));
                 }
         }
 
         /// <summary>
         /// Функция генерации трека
         /// </summary>
-        private void CreateTrack()
+        public void CreateTrack()
         {
             int z = 0;
             int count = 0;
             int x0, y0, x1, y1;     // левый верхний и праввый нижний углы окна
 
-            double len;
+            //double len;
 
             int x, y;   // ширина и высота окна
 
@@ -173,15 +186,12 @@ namespace StarsCreate
             x1 = x0 + x;
             y1 = y0 + y;
 
-            //PNG_Trace_adder.RenderLine(ref PixTrack, fx, fy, lx, ly, x0, y0, x1, y1, Et, sigm, spp, w, h);
             PNG_Trace_adder.RenderLine(ref PixTrack, x0, y0, x1, y1, x0, y0, x1, y1, Et, 1.0f, 4, W, H);
 
             // перенос рендеренной линии на изображение
             for (int i = 0; i < W; i++)
                 for (int j = 0; j < H; j++)
                 {
-                    //if (PixValue16[i, j] < (PixTrack[z] /*+ PodstConst*/))
-                    //if (PixTrack[z] > 0)
                     {
                         PixValue16[i, j] = Convert.ToInt32(PixTrack[z] /*+ PodstConst*/) + PixValue16[i, j];
                         count++;
@@ -194,18 +204,18 @@ namespace StarsCreate
         /// <summary>
         /// Переносит значения массивов на холсты
         /// </summary>
-        private void PixToBitAll()
+        public void PixToBitAll()
         {
-            int temp;
+            //int temp;
             ushort temp16;
 
             for (int i = 0; i < W; i++)
                 for (int j = 0; j < H; j++)
                 {
-                    temp = Convert.ToInt32(Val16ToVal8(PixValue16[i, j]));
-                    temp = temp >= 0 ? temp : 0;
-                    temp = temp <= 255 ? temp : 255;
-                    Imbm.SetPixel(i, j, Color.FromArgb(temp, temp, temp));
+                    //temp = Convert.ToInt32(Val16ToVal8(PixValue16[i, j]));
+                    //temp = temp >= 0 ? temp : 0;
+                    //temp = temp <= 255 ? temp : 255;
+                    //Imbm.SetPixel(i, j, Color.FromArgb(temp, temp, temp));
 
                     temp16 = Convert.ToUInt16(PixValue16[i, j] >= 0 ? (PixValue16[i, j] <= 65535 ? PixValue16[i, j] : 65535) : 0);
                     bm.SetPixelFor16bit(i, j, temp16);
@@ -294,8 +304,6 @@ namespace StarsCreate
             y4 = yc - y < H ? yc - y : H - 1;
             y4 = y4 >= 0 ? y4 : 0;
 
-            //ushort ttt = Convert.ToUInt16(pixel);
-
             Pixel_circle16_cikl(x1, y1, pixel);
             Pixel_circle16_cikl(x2, y2, pixel);
             Pixel_circle16_cikl(x2, y3, pixel);
@@ -345,12 +353,21 @@ namespace StarsCreate
         }
 
         /// <summary>
+        /// Создать звёзды
+        /// </summary>
+        public void CreateStars()
+        {
+            for (int i = 0; i < Kolstars; i++)
+                CretStarVal();
+        }
+
+        /// <summary>
         /// Создать одну звезду в случайном месте
         /// </summary>
         private void CretStarVal()
         {
             double[] znach;
-            int radius = rd.Next(1, Convert.ToInt32(Math.Min(bm.Width, bm.Height) / 100));
+            int radius = rd.Next(1, Convert.ToInt32(Math.Min(W, H) / 100));
             int x, y;
             x = rd.Next(1, bm.Width);
             y = rd.Next(1, bm.Height);
@@ -359,9 +376,6 @@ namespace StarsCreate
 
             int light = rd.Next(256, 65535);
 
-            //for (int i = 1; i <= 10; i++)
-            //   Imbm.V_MIcirc(x, y, i, 255 - (i));
-            //Imbm.V_Brezenh(x, y, 10, 255);
             znach = new double[radius];
 
             for (int i = 0; i < radius; i++)
@@ -370,26 +384,13 @@ namespace StarsCreate
             for (int i = 1; i <= radius; i++)
             {
                 int temp = ValZnach(znach[0], Convert.ToInt32(light / 256), znach[i - 1]);
-                int xx = x + i < Imbm.Width ? x + i : Imbm.Width - 1;
-                //int col = Imbm.GetPixel(xx, y).G;
+                int xx = x + i < bm.Width ? x + i : bm.Width - 1;
+
                 if (Val16ToVal8(PixValue16[xx, y]) <= temp)
                 {
-                    //V_MIcirc(x, y, i, temp);
-
                     temp = ValZnach(znach[0], light, znach[i - 1]);
 
                     V_MIcirc16(x, y, i, temp);
-                }
-            }
-        }
-
-        private void ValToBitMap()
-        {
-            for (int i = 0; i < Imbm.Height; i++)
-            {
-                for (int j = 0; j < Imbm.Width; j++)
-                {
-                    Imbm.SetPixel(j, i, Color.Black);
                 }
             }
         }
