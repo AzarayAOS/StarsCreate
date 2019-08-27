@@ -101,10 +101,11 @@ namespace StarsCreate
         /// <param name="value"></param>
         private void AddZnach(int x, int y, int value)
         {
-            if (PixValue16[x, y] < value)
-                PixValue16[x, y] = value;
+            //if (PixValue16[x, y] < value)
+            PixValue16[x, y] = value;
 
             PixValue16[x, y] = PixValue16[x, y] >= 65535 ? 65535 : PixValue16[x, y];
+            PixValue16[x, y] = PixValue16[x, y] <= 0 ? 0 : PixValue16[x, y];
         }
 
         /// <summary>
