@@ -52,12 +52,12 @@ namespace StarsCreate
         {
             trackBar1.Maximum = Convert.ToInt32(textBox4.Text);
             CreatePic = new CreatePicture(
-                Convert.ToInt32(textBox2.Text),
-                Convert.ToInt32(textBox1.Text),
-                rd.Next(100, 500),
-                Convert.ToInt32(textBox3.Text),
-                Convert.ToInt32(textBox4.Text),
-                Convert.ToSingle(textBox5.Text),
+                Convert.ToInt32(textBox2.Text),     // ширина
+                Convert.ToInt32(textBox1.Text),     // высота
+                rd.Next(100, 500),                  // количество генерируемых звёзд
+                Convert.ToInt32(textBox3.Text),     // Шум
+                Convert.ToInt32(textBox4.Text),     // фоновая подставка
+                Convert.ToSingle(textBox5.Text),    // Энергия трека
                 spp,
                 sigm);
         }

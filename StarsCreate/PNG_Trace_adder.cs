@@ -12,7 +12,6 @@ namespace StarsCreate
     internal static class PNG_Trace_adder
     {
         private readonly static double c_0707 = Math.Sin(Math.PI / 4);     // sin(45) 0,707106781186547
-        private readonly static double sqrt_2 = Math.Sqrt(2);              // корень из 2   1,4142135623731
 
         // коэффициенты для поляризации разряда в эмпирических зависимостях
         private readonly static double P = 0.47047;
@@ -160,19 +159,39 @@ namespace StarsCreate
             for (int jy = jy_f - 1; jy <= jy_l; jy++)
             {
                 t = (Convert.ToDouble(jy) + 0.5 - yp) * c;
-                //            erf_liney[jy - jy_f + 1] = (float)erf(t);
                 t1 = 1 / (1 + P * Math.Abs(t));
-                if (t >= 0) erf_liney[jy - jy_f + 1] = Convert.ToSingle(1 - ((A1) * t1 + A2 * t1 * t1 + A3 * t1 * t1 * t1) * Math.Exp(-1 * t * t));
-                else erf_liney[jy - jy_f + 1] = -1 * Convert.ToSingle(1 - (Convert.ToSingle(A1) * t1 + Convert.ToSingle(A2) * t1 * t1 + Convert.ToSingle(A3) * t1 * t1 * t1) * Math.Exp(-1 * t * t));
+                if (t >= 0)
+                    erf_liney[jy - jy_f + 1] =
+                        Convert.ToSingle(1 - ((A1) *
+                        t1 + A2 * t1 * t1 +
+                        A3 * t1 * t1 * t1) *
+                        Math.Exp(-1 * t * t));
+                else
+                    erf_liney[jy - jy_f + 1] =
+                        -1 * Convert.ToSingle(1 -
+                        (Convert.ToSingle(A1) * t1 +
+                        Convert.ToSingle(A2) * t1 * t1 +
+                        Convert.ToSingle(A3) * t1 * t1 * t1)
+                        * Math.Exp(-1 * t * t));
             }
             ;
             for (int ix = ix_f - 1; ix < ix_l; ix++)
             {
                 t = (Convert.ToDouble(ix) + 0.5 - xp) * c;
-                //            erf_linex[ix-ix_f+1] = (float)erf(t);
                 t1 = 1.0 / (1.0 + P * Math.Abs(t));
-                if (t >= 0) erf_linex[ix - ix_f + 1] = Convert.ToSingle(1 - ((A1) * t1 + A2 * t1 * t1 + A3 * t1 * t1 * t1) * Math.Exp(-1 * t * t));
-                else erf_linex[ix - ix_f + 1] = -1 * Convert.ToSingle(1 - (Convert.ToSingle(A1) * t1 + Convert.ToSingle(A2) * t1 * t1 + Convert.ToSingle(A3) * t1 * t1 * t1) * Math.Exp(-1 * t * t));
+                if (t >= 0)
+                    erf_linex[ix - ix_f + 1] =
+                        Convert.ToSingle(1 - ((A1) *
+                        t1 + A2 * t1 * t1 +
+                        A3 * t1 * t1 * t1) *
+                        Math.Exp(-1 * t * t));
+                else
+                    erf_linex[ix - ix_f + 1] =
+                        -1 * Convert.ToSingle(1 -
+                        (Convert.ToSingle(A1) * t1 +
+                        Convert.ToSingle(A2) * t1 * t1 +
+                        Convert.ToSingle(A3) * t1 * t1 * t1)
+                        * Math.Exp(-1 * t * t));
             }
 
             Et = Convert.ToSingle(Et * 0.25);
@@ -180,7 +199,10 @@ namespace StarsCreate
             for (int jy = jy_f; jy <= jy_l; jy++)
                 for (int ix = ix_f; ix <= ix_l; ix++)
                 {
-                    t = Et * (erf_liney[jy - jy_f + 1] - erf_liney[jy - jy_f]) * (erf_linex[ix - ix_f + 1] - erf_linex[ix - ix_f]);
+                    t = Et * (erf_liney[jy - jy_f + 1] -
+                        erf_liney[jy - jy_f]) *
+                        (erf_linex[ix - ix_f + 1] -
+                        erf_linex[ix - ix_f]);
                     if (t > 0) frame[ix * ny + jy] += Convert.ToSingle(t);
                 }
 

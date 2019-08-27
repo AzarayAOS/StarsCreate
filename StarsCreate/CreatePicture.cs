@@ -18,9 +18,9 @@ namespace StarsCreate
 
         public int W { get; set; }      // размеры холста, ширина
 
-        public int Noise { get; set; }  // шум на изображение
-        private Random rd;          // рандомайзер
-        private Bitmap bm;          // 16 битный холст
+        public int Noise { get; set; } // шум на изображение
+        private Random rd;              // рандомайзер
+        private Bitmap bm;              // 16 битный холст
 
         public int Kolstars { get; set; }           // Количество генерируемых звёзд
 
@@ -93,6 +93,21 @@ namespace StarsCreate
         }
 
         /// <summary>
+        /// Добавляет в пиксель с координатами (<paramref name="x"/>, <paramref name="y"/>)
+        /// значение <paramref name="value"/>
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="value"></param>
+        private void AddZnach(int x, int y, int value)
+        {
+            if (PixValue16[x, y] < value)
+                PixValue16[x, y] = value;
+
+            PixValue16[x, y] = PixValue16[x, y] >= 65535 ? 65535 : PixValue16[x, y];
+        }
+
+        /// <summary>
         /// Добавить шум на изображение
         /// </summary>
         public void AddNoise()
@@ -101,8 +116,7 @@ namespace StarsCreate
 
             for (int i = 0; i < W; i++)
                 for (int j = 0; j < H; j++)
-                    if (PixValue16[i, j] < Noiz16[i, j])
-                        PixValue16[i, j] = Noiz16[i, j];
+                    AddZnach(i, j, Noiz16[i, j]);
         }
 
         /// <summary>
@@ -167,8 +181,8 @@ namespace StarsCreate
         public void CreateTrack()
         {
             int z = 0;
-            int count = 0;
-            int x0, y0, x1, y1;     // левый верхний и праввый нижний углы окна
+            //int count = 0;
+            int x0, y0, x1, y1;     // левый верхний и правый нижний углы окна
 
             //double len;
 
@@ -193,8 +207,10 @@ namespace StarsCreate
                 for (int j = 0; j < H; j++)
                 {
                     {
-                        PixValue16[i, j] = Convert.ToInt32(PixTrack[z] /*+ PodstConst*/) + PixValue16[i, j];
-                        count++;
+                        //PixValue16[i, j] = Convert.ToInt32(PixTrack[z] /*+ PodstConst*/) + PixValue16[i, j];
+
+                        AddZnach(i, j, Convert.ToInt32(PixTrack[z]) + PixValue16[i, j]);
+                        //count++;
                     }
 
                     z++;
@@ -227,7 +243,7 @@ namespace StarsCreate
         /// </summary>
         /// <param name="x">координата по горизонтале</param>
         /// <param name="y">Координата по вертикале</param>
-        /// <param name="pixel">Яроксть пикселя</param>
+        /// <param name="pixel">Яркость пикселя</param>
         private void Pixel_circle16_cikl(int x, int y, int pixel)
         {
             ushort ttt = Convert.ToUInt16(pixel);
@@ -250,20 +266,26 @@ namespace StarsCreate
             y2 = y2 >= 0 ? y2 : 0;
             y4 = y4 < H ? y4 : H - 1;
 
-            if (PixValue16[x, y] < pixel)
-                PixValue16[x, y] = pixel;
+            //if (PixValue16[x, y] < pixel)
+            //    PixValue16[x, y] = pixel;
 
-            if (PixValue16[x1, y1] < pixel)
-                PixValue16[x1, y1] = pixel;
+            //if (PixValue16[x1, y1] < pixel)
+            //    PixValue16[x1, y1] = pixel;
 
-            if (PixValue16[x2, y2] < pixel)
-                PixValue16[x2, y2] = pixel;
+            //if (PixValue16[x2, y2] < pixel)
+            //    PixValue16[x2, y2] = pixel;
 
-            if (PixValue16[x3, y3] < pixel)
-                PixValue16[x3, y3] = pixel;
+            //if (PixValue16[x3, y3] < pixel)
+            //    PixValue16[x3, y3] = pixel;
 
-            if (PixValue16[x4, y4] < pixel)
-                PixValue16[x4, y4] = pixel;
+            //if (PixValue16[x4, y4] < pixel)
+            //    PixValue16[x4, y4] = pixel;
+
+            AddZnach(x, y, pixel);
+            AddZnach(x1, y1, pixel);
+            AddZnach(x2, y2, pixel);
+            AddZnach(x3, y3, pixel);
+            AddZnach(x4, y4, pixel);
         }
 
         /// <summary>
@@ -342,11 +364,11 @@ namespace StarsCreate
         }
 
         /// <summary>
-        /// Перевод значения пикслеля из 16 битного варианта
-        /// в 8битный вариант, пропорцеонально
+        /// Перевод значения пикселя из 16 битного варианта
+        /// в 8битный вариант, пропорционально
         /// </summary>
-        /// <param name="x">значения пиксиля в 16битном варианте</param>
-        /// <returns>выозращает пропорцеональное значение <paramref name="x"/> в 8битном формате.</returns>
+        /// <param name="x">значения пикселя в 16битном варианте</param>
+        /// <returns>возвращает пропорциональное значение <paramref name="x"/> в 8битном формате.</returns>
         private int Val16ToVal8(int x)
         {
             return Convert.ToInt32((255 * x) / 65535);
@@ -396,7 +418,7 @@ namespace StarsCreate
         }
 
         /// <summary>
-        /// Первод двумерного массива в одномерный
+        /// Перевод двумерного массива в одномерный
         /// </summary>
         private int[] Mass2To1(int[,] m2)
         {
