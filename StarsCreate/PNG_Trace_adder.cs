@@ -63,8 +63,8 @@ namespace StarsCreate
 
             for (int i = 0; i < form.Length; i++)
             {
-                //form[i] = Convert.ToInt32(form[i] + (rnd.NextDouble() + rnd.NextDouble() + rnd.NextDouble() + rnd.NextDouble() - 2) * noisePower);
-                form[i] = Convert.ToInt32(form[i] + (rnd.NextDouble() - 0.5) * noisePower);
+                form[i] = Convert.ToInt32(form[i] + (rnd.NextDouble() + rnd.NextDouble() + rnd.NextDouble() + rnd.NextDouble() - 2) * noisePower);
+                //form[i] = Convert.ToInt32(form[i] + (rnd.NextDouble() - 0.5) * noisePower);
             }
 
             return form;

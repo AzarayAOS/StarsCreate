@@ -18,6 +18,8 @@ namespace StarsCreate
 
         public int W { get; set; }      // размеры холста, ширина
 
+        public string FileName { get; set; }    // пусть к сохраняемому файлу
+
         public int Noise { get; set; } // шум на изображение
         private Random rd;              // рандомайзер
         private Bitmap bm;              // 16 битный холст
@@ -41,7 +43,8 @@ namespace StarsCreate
         /// <param name="Et">Энергия трека</param>
         /// <param name="spp">Шаг отрисовка трека</param>
         /// <param name="sigm">Сигма распределения трека по ширине</param>
-        public CreatePicture(int w, int h, int kolstars, int Noise, int PodstConst, float Et, int spp, float sigm)
+        /// <param name="filename">Пусть к файлу сохранения</param>
+        public CreatePicture(int w, int h, int kolstars, int Noise, int PodstConst, float Et, int spp, float sigm, string filename)
         {
             this.W = w;
             this.H = h;
@@ -51,6 +54,7 @@ namespace StarsCreate
             this.Et = Et;
             this.Spp = spp;
             this.Sigm = sigm;
+            this.FileName = filename;
 
             rd = new Random();
 
@@ -81,6 +85,28 @@ namespace StarsCreate
         public Bitmap GetBitmap()
         {
             return bm;
+        }
+
+        /// <summary>
+        /// Сохранить BitMap в файл
+        /// </summary>
+        public void BitMapSave()
+        {
+            bm.Save16bitBitmapToPng(FileName);
+        }
+
+        /// <summary>
+        /// Программа, выполняющая последовательность по созданию,
+        /// генерированию звёзд, генерированию шума, наложению трека
+        /// и сохранения в файл
+        /// </summary>
+        public void StartCreate()
+        {
+            CreateStars();  // создание звёзд
+            AddNoise();     // добавляем шум
+            CreateTrack();  // создаём трек
+            PixToBitAll();  // переносим на холст
+            BitMapSave();   // сохраняем в файл
         }
 
         /// <summary>
@@ -121,7 +147,7 @@ namespace StarsCreate
         }
 
         /// <summary>
-        /// Вычисляет текущее значение яркости пикселя относительно гауссовского распределения
+        /// Пропорциональный перевод значения из одного диапазона, в другой
         /// </summary>
         /// <param name="Vakslokal">Максимальное значение из вычисленного</param>
         /// <param name="maxznach">Максимальное значение из нового диапазона</param>
