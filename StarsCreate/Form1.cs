@@ -65,12 +65,10 @@ namespace StarsCreate
 
         private string FileNameDir = "D:\\JavaStarTrak\\Nikita\\Output_png\\";      // путь к папке, где генерить изображения
 
-        private Thread Thread;
-
         public Form1()
         {
             InitializeComponent();
-            textBox3.Text = trackBar1.Value.ToString();
+
             rd = new Random();
         }
 
@@ -85,7 +83,6 @@ namespace StarsCreate
 
         private void TrackBar1_Scroll(object sender, EventArgs e)
         {
-            textBox3.Text = trackBar1.Value.ToString();
         }
 
         private void Button1_Click(object sender, EventArgs e)
@@ -135,7 +132,6 @@ namespace StarsCreate
 
         private void TextBox4_TextChanged(object sender, EventArgs e)
         {
-            trackBar1.Maximum = Convert.ToInt32(textBox4.Text.Length > 0 ? textBox4.Text : "0");
             textBox3.Text = textBox4.Text.Length > 0 ? textBox4.Text : "0";
         }
 
@@ -184,7 +180,6 @@ namespace StarsCreate
 
         private void TrackBar1_ValueChanged(object sender, EventArgs e)
         {
-            textBox3.Text = trackBar1.Value.ToString();
         }
 
         private void Button7_Click(object sender, EventArgs e)
@@ -192,7 +187,18 @@ namespace StarsCreate
             st.Restart();
             st.Start();
 
-            CreatePic.StartCreate();
+            CreatePicture CreatePic2 = new CreatePicture(
+                    Convert.ToInt32(textBox2.Text.Length > 0 ? textBox2.Text : "0"),        // ширина
+                    Convert.ToInt32(textBox1.Text.Length > 0 ? textBox1.Text : "0"),        // высота
+                    rd.Next(100, 500),                                                      // количество генерируемых звёзд
+                    Convert.ToInt32(textBox3.Text.Length > 0 ? textBox3.Text : "0"),        // Шум
+                    Convert.ToInt32(textBox4.Text.Length > 0 ? textBox4.Text : "0"),        // фоновая подставка
+                    Convert.ToSingle(textBox5.Text.Length > 0 ? textBox5.Text : "0"),       // Энергия трека
+                    spp,
+                    sigm,
+                    FileNameDir + "0.png");      // пусть сохраненияCreatePicture CreatePic1 = new CreatePicture(
+
+            CreatePic2.StartCreate();
             st.Stop();
             toolStripStatusLabel1.Text = "Создано за " + st.Elapsed.ToString();
         }
@@ -217,7 +223,11 @@ namespace StarsCreate
                     {
                         progressBar1.Value = progressBar1.Value + 1 < progressBar1.Maximum ? progressBar1.Value + 1 : progressBar1.Maximum;
 
-                        toolStripStatusLabel1.Text = "Создано " + progressBar1.Value.ToString() + " изображений за " + st.Elapsed.ToString();
+                        toolStripStatusLabel2.Text = progressBar1.Value.ToString();
+
+                        toolStripStatusLabel4.Text = TimeToStreamCorect(st.Elapsed.Ticks);
+
+                        toolStripStatusLabel6.Text = TimeReturn(st.Elapsed.Ticks, Convert.ToInt64(progressBar1.Value));
                         break;
                     }
                 case "StopProccec":
@@ -227,7 +237,11 @@ namespace StarsCreate
                         {
                             st.Stop();
                             progressBar1.Value = progressBar1.Maximum;
-                            toolStripStatusLabel1.Text = "Создано " + progressBar1.Value.ToString() + " изображений за " + st.Elapsed.ToString() + "  Завершено!!!";
+                            //toolStripStatusLabel1.Text = "Создано " + progressBar1.Value.ToString() + " изображений за " + st.Elapsed.ToString() + "  Завершено!!!";
+
+                            toolStripStatusLabel2.Text = progressBar1.Value.ToString(); toolStripStatusLabel2.Text = progressBar1.Value.ToString();
+                            toolStripStatusLabel4.Text = TimeToStreamCorect(st.Elapsed.Ticks);
+                            threads.Clear();
                         }
                         break;
                     }
@@ -239,6 +253,25 @@ namespace StarsCreate
                         break;
                     }
             }
+        }
+
+        private string TimeReturn(long t, long x)
+        {
+            long s;
+            s = t * kol;
+            s = s / x;
+            s = s - t;
+
+            DateTime date = new DateTime(s);
+
+            return date.ToLongTimeString();
+        }
+
+        private static string TimeToStreamCorect(long s)
+        {
+            DateTime date = new DateTime(s);
+
+            return date.ToLongTimeString();
         }
 
         private void Button8_Click(object sender, EventArgs e)
@@ -275,7 +308,7 @@ namespace StarsCreate
 
             //Thread.Start(Pc);
 
-            toolStripStatusLabel1.Text = "Создано " + progressBar1.Value.ToString() + " изображений за " + st.Elapsed.ToString();
+            toolStripStatusLabel2.Text = "0";
         }
 
         private void Procces(object state)
@@ -288,7 +321,6 @@ namespace StarsCreate
             int kol = Pc.kol;
             uiContext.Post(UpdateUI, "StartProccec");
 
-            //int kol = 5;
             for (int i = Pc.StartValue; i < kol; i += Pc.Step)
             {
                 try
