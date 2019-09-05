@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
 
 namespace StarsCreate
 {
@@ -32,6 +33,11 @@ namespace StarsCreate
         public int Spp { get; set; }                // Шаг отрисовки трека
         public float Sigm { get; set; }             // Ширина трека и концентрация энергии
 
+        public bool FStar { get; set; }             // флаг необходимой генерации звёзд
+        public bool FNoise { get; set; }            // флаг необходимой генерации шума
+        public bool FTrack { get; set; }            // флаг необходимости генерации трека
+        public bool FTrackTxt { get; set; }         // флаг создания текстового файла с координатами трека
+
         /// <summary>
         /// конструктор класса генерации изображения
         /// </summary>
@@ -44,7 +50,24 @@ namespace StarsCreate
         /// <param name="spp">Шаг отрисовка трека</param>
         /// <param name="sigm">Сигма распределения трека по ширине</param>
         /// <param name="filename">Пусть к файлу сохранения</param>
-        public CreatePicture(int w, int h, int kolstars, int Noise, int PodstConst, float Et, int spp, float sigm, string filename)
+        /// <param name="FStar">Генерировать ли звёзды</param>
+        /// <param name="FNoise">Генерировать ли шум</param>
+        /// <param name="FTrack">Генерировать ли трек</param>
+        /// <param name="FTrackTxt">Записывать ли координаты трека в *.txt</param>
+        public CreatePicture(
+            int w,
+            int h,
+            int kolstars,
+            int Noise,
+            int PodstConst,
+            float Et,
+            int spp,
+            float sigm,
+            string filename,
+            bool FStar = true,
+            bool FNoise = true,
+            bool FTrack = true,
+            bool FTrackTxt = false)
         {
             this.W = w;
             this.H = h;
@@ -55,6 +78,10 @@ namespace StarsCreate
             this.Spp = spp;
             this.Sigm = sigm;
             this.FileName = filename;
+            this.FStar = FStar;
+            this.FNoise = FNoise;
+            this.FTrack = FTrack;
+            this.FTrackTxt = FTrackTxt;
 
             rd = new Random();
 
@@ -92,7 +119,7 @@ namespace StarsCreate
         /// </summary>
         public void BitMapSave()
         {
-            bm.Save16bitBitmapToPng(FileName);
+            bm.Save16bitBitmapToPng(FileName + ".png");
         }
 
         /// <summary>
@@ -102,9 +129,15 @@ namespace StarsCreate
         /// </summary>
         public void StartCreate()
         {
-            CreateStars();  // создание звёзд
-            AddNoise();     // добавляем шум
-            CreateTrack();  // создаём трек
+            if (FStar)
+                CreateStars();  // создание звёзд
+
+            if (FNoise)
+                AddNoise();     // добавляем шум
+
+            if (FTrack)
+                CreateTrack();  // создаём трек
+
             PixToBitAll();  // переносим на холст
             BitMapSave();   // сохраняем в файл
         }
@@ -227,6 +260,17 @@ namespace StarsCreate
             x1 = x0 + x;
             y1 = y0 + y;
 
+            if (FTrackTxt)
+            {
+                using (StreamWriter sw = new StreamWriter(FileName + ".txt"))
+                {
+                    sw.WriteLine("x0=" + x0.ToString());
+                    sw.WriteLine("y0=" + (H - y0).ToString());
+
+                    sw.WriteLine("x1=" + x1.ToString());
+                    sw.WriteLine("y1=" + (H - y1).ToString());
+                }
+            }
             PNG_Trace_adder.RenderLine(ref PixTrack, x0, y0, x1, y1, x0, y0, x1, y1, Et, 1.0f, 4, W, H);
 
             // перенос рендеренной линии на изображение

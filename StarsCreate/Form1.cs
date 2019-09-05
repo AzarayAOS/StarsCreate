@@ -63,12 +63,12 @@ namespace StarsCreate
         // контекст синхронизации
         private SynchronizationContext uiContext;
 
-        private string FileNameDir = "D:\\JavaStarTrak\\Nikita\\Output_png\\";      // путь к папке, где генерить изображения
+        private string FileNameDir = "D:\\JavaStarTrak\\Nikita\\Output_png";      // путь к папке, где генерить изображения
 
         public Form1()
         {
             InitializeComponent();
-
+            textBox8.Text = FileNameDir + "\\";
             rd = new Random();
         }
 
@@ -87,6 +87,11 @@ namespace StarsCreate
 
         private void Button1_Click(object sender, EventArgs e)
         {
+            if (System.IO.Directory.Exists(textBox8.Text))
+            {
+                FileNameDir = textBox8.Text;
+            }
+
             //trackBar1.Maximum = Convert.ToInt32(textBox4.Text.Length > 0 ? textBox4.Text : "0");
             CreatePic = new CreatePicture(
                 Convert.ToInt32(textBox2.Text.Length > 0 ? textBox2.Text : "0"),        // ширина
@@ -97,7 +102,12 @@ namespace StarsCreate
                 Convert.ToSingle(textBox5.Text.Length > 0 ? textBox5.Text : "0"),       // Энергия трека
                 spp,
                 sigm,
-                "D:\\JavaStarTrak\\Nikita\\Output_png\\1.png");                         // пусть сохранения
+                FileNameDir + "\\1",                        // пусть сохранения
+                    checkBox1.Checked,                      // разрешение на генерацию звёзд
+                    checkBox2.Checked,                      // разрешение на генерацию шума
+                    checkBox3.Checked,                      // разрешение на генерацию трека
+                    checkBox4.Checked                       // разрешение на запись координат трека в файл
+                    );
         }
 
         private void Button2_Click(object sender, EventArgs e)
@@ -122,7 +132,10 @@ namespace StarsCreate
 
             CreatePic.PixToBitAll();
             st.Stop();
-            toolStripStatusLabel1.Text = "Отображено за " + st.Elapsed.ToString();
+
+            toolStripStatusLabel2.Text = progressBar1.Value.ToString();
+            toolStripStatusLabel4.Text = TimeToStreamCorect(st.Elapsed.Ticks);
+            toolStripStatusLabel6.Text = "  Завершено!!!";
         }
 
         private void Button6_Click(object sender, EventArgs e)
@@ -196,11 +209,17 @@ namespace StarsCreate
                     Convert.ToSingle(textBox5.Text.Length > 0 ? textBox5.Text : "0"),       // Энергия трека
                     spp,
                     sigm,
-                    FileNameDir + "0.png");      // пусть сохраненияCreatePicture CreatePic1 = new CreatePicture(
-
+                    FileNameDir + "\\1",                    // пусть сохранения
+                    checkBox1.Checked,                      // разрешение на генерацию звёзд
+                    checkBox2.Checked,                      // разрешение на генерацию шума
+                    checkBox3.Checked,                      // разрешение на генерацию трека
+                    checkBox4.Checked                       // разрешение на запись координат трека в файл
+                    );
             CreatePic2.StartCreate();
             st.Stop();
-            toolStripStatusLabel1.Text = "Создано за " + st.Elapsed.ToString();
+            toolStripStatusLabel2.Text = progressBar1.Value.ToString();
+            toolStripStatusLabel4.Text = TimeToStreamCorect(st.Elapsed.Ticks);
+            toolStripStatusLabel6.Text = "  Завершено!!!";
         }
 
         /// <summary>
@@ -239,8 +258,9 @@ namespace StarsCreate
                             progressBar1.Value = progressBar1.Maximum;
                             //toolStripStatusLabel1.Text = "Создано " + progressBar1.Value.ToString() + " изображений за " + st.Elapsed.ToString() + "  Завершено!!!";
 
-                            toolStripStatusLabel2.Text = progressBar1.Value.ToString(); toolStripStatusLabel2.Text = progressBar1.Value.ToString();
+                            toolStripStatusLabel2.Text = progressBar1.Value.ToString();
                             toolStripStatusLabel4.Text = TimeToStreamCorect(st.Elapsed.Ticks);
+                            toolStripStatusLabel6.Text = "  Завершено!!!";
                             threads.Clear();
                         }
                         break;
@@ -335,7 +355,12 @@ namespace StarsCreate
                     Convert.ToSingle(textBox5.Text.Length > 0 ? textBox5.Text : "0"),       // Энергия трека
                     spp,
                     sigm,
-                    FileNameDir + i.ToString() + ".png");      // пусть сохранения
+                    FileNameDir + "\\" + i.ToString(),      // пусть сохранения
+                    checkBox1.Checked,                      // разрешение на генерацию звёзд
+                    checkBox2.Checked,                      // разрешение на генерацию шума
+                    checkBox3.Checked,                      // разрешение на генерацию трека
+                    checkBox4.Checked                       // разрешение на запись координат трека в файл
+                    );
 
                     CreatePic1.StartCreate();
 
@@ -359,6 +384,33 @@ namespace StarsCreate
 
                 for (int i = 0; i < KolParallel; i++)
                     threads[i].Join();
+            }
+        }
+
+        private void CheckBox3_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!checkBox3.Checked)
+            {
+                checkBox4.Checked = false;
+                checkBox4.Enabled = false;
+            }
+            else
+                checkBox4.Enabled = true;
+        }
+
+        private void Button9_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog Fbd = new FolderBrowserDialog();
+            Fbd.SelectedPath = FileNameDir;
+            Fbd.Description = "Укажите пусть к папке, в которую будут сохраняться сгенерированные изображения.";
+
+            if (Fbd.ShowDialog() == DialogResult.OK)
+            {
+                if (System.IO.Directory.Exists(Fbd.SelectedPath))
+                {
+                    FileNameDir = Fbd.SelectedPath + "\\";
+                    textBox8.Text = FileNameDir;
+                }
             }
         }
     }
