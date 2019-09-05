@@ -118,23 +118,18 @@ namespace StarsCreate
             float len = Convert.ToSingle(Math.Sqrt(xl * xl + yl * yl));
             int kmax = Convert.ToInt32(Math.Floor(len * spp) + 1);
 
-            Et = Et / kmax;
-
-            float xk = 0;
-            float yk = 0;
-            float tk = 0;
-
+            Et /= kmax;
             for (int k = 0; k <= kmax; k++)
             {
-                tk = Convert.ToSingle(k) / Convert.ToSingle(kmax);
-                xk = Convert.ToSingle(xl * tk + xa);
-                yk = Convert.ToSingle(yl * tk + ya);
+                float tk = Convert.ToSingle(k) / Convert.ToSingle(kmax);
+                float xk = Convert.ToSingle(xl * tk + xa);
+                float yk = Convert.ToSingle(yl * tk + ya);
 
-                renderPoint(ref frame, fx, fy, lx, ly, xk, yk, Et, sigm, nx, ny);
+                RenderPoint(ref frame, fx, fy, lx, ly, xk, yk, Et, sigm, nx, ny);
             }
         }
 
-        private static void renderPoint(ref float[] frame, int fx, int fy, int lx, int ly, float xp, float yp, float Et, float sigm, int nx, int ny)
+        private static void RenderPoint(ref float[] frame, int fx, int fy, int lx, int ly, float xp, float yp, float Et, float sigm, int nx, int ny)
         {
             float s = Convert.ToSingle(Math.Sqrt(2) * sigm);
             float c = Convert.ToSingle(Math.Sqrt(2) / (2 * sigm));

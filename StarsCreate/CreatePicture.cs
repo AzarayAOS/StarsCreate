@@ -25,9 +25,9 @@ namespace StarsCreate
         private Random rd;              // рандомайзер
         private Bitmap bm;              // 16 битный холст
 
-        public int Kolstars { get; set; }           // Количество генерируемых звёзд
+        public int Kolstars { get; set; }          // Количество генерируемых звёзд
 
-        public int PodstConst { get; set; }         // Подставка под матрицу
+        public int PodstConst { get; set; }        // Подставка под матрицу
 
         public float Et { get; set; }               // Энергия трека
         public int Spp { get; set; }                // Шаг отрисовки трека
@@ -100,7 +100,7 @@ namespace StarsCreate
         /// Возвращает массив пикселей
         /// </summary>
         /// <returns></returns>
-        public int[,] getPixel16()
+        public int[,] GetPixel16()
         {
             return PixValue16;
         }
@@ -140,15 +140,6 @@ namespace StarsCreate
 
             PixToBitAll();  // переносим на холст
             BitMapSave();   // сохраняем в файл
-        }
-
-        /// <summary>
-        /// Процедура генерации звёзд
-        /// </summary>
-        private void GenericStar()
-        {
-            for (int i = 0; i < Kolstars; i++)
-                CretStarVal();
         }
 
         /// <summary>
@@ -204,35 +195,6 @@ namespace StarsCreate
             double a = 1 / (d * Math.Sqrt(2 * Math.PI));
             double e = Math.Exp(-(Math.Pow(x - u, 2) / (2 * d * d)));
             return a * e;
-        }
-
-        /// <summary>
-        /// Перенос значения массива на холст 16 битный
-        /// </summary>
-        private void PixToBit16()
-        {
-            ushort temp16;
-
-            for (int i = 0; i < W; i++)
-                for (int j = 0; j < H; j++)
-                {
-                    temp16 = Convert.ToUInt16(PixValue16[i, j]);
-                    bm.SetPixelFor16bit(i, j, temp16);
-                }
-        }
-
-        /// <summary>
-        /// Перенос значения массива на холст 8 битный
-        /// </summary>
-        private void PixToBit8()
-        {
-            int temp;
-
-            for (int i = 0; i < W; i++)
-                for (int j = 0; j < H; j++)
-                {
-                    temp = Convert.ToInt32(Val16ToVal8(Val16ToVal8(PixValue16[i, j])));
-                }
         }
 
         /// <summary>
@@ -337,21 +299,6 @@ namespace StarsCreate
             y2 = y2 >= 0 ? y2 : 0;
             y4 = y4 < H ? y4 : H - 1;
 
-            //if (PixValue16[x, y] < pixel)
-            //    PixValue16[x, y] = pixel;
-
-            //if (PixValue16[x1, y1] < pixel)
-            //    PixValue16[x1, y1] = pixel;
-
-            //if (PixValue16[x2, y2] < pixel)
-            //    PixValue16[x2, y2] = pixel;
-
-            //if (PixValue16[x3, y3] < pixel)
-            //    PixValue16[x3, y3] = pixel;
-
-            //if (PixValue16[x4, y4] < pixel)
-            //    PixValue16[x4, y4] = pixel;
-
             AddZnach(x, y, pixel);
             AddZnach(x1, y1, pixel);
             AddZnach(x2, y2, pixel);
@@ -435,17 +382,6 @@ namespace StarsCreate
         }
 
         /// <summary>
-        /// Перевод значения пикселя из 16 битного варианта
-        /// в 8битный вариант, пропорционально
-        /// </summary>
-        /// <param name="x">значения пикселя в 16битном варианте</param>
-        /// <returns>возвращает пропорциональное значение <paramref name="x"/> в 8битном формате.</returns>
-        private int Val16ToVal8(int x)
-        {
-            return Convert.ToInt32((255 * x) / 65535);
-        }
-
-        /// <summary>
         /// Создать звёзды
         /// </summary>
         public void CreateStars()
@@ -476,10 +412,10 @@ namespace StarsCreate
 
             for (int i = 1; i <= radius; i++)
             {
-                int temp = ValZnach(znach[0], Convert.ToInt32(light / 256), znach[i - 1]);
+                int temp = ValZnach(znach[0], Convert.ToInt32(light), znach[i - 1]);
                 int xx = x + i < bm.Width ? x + i : bm.Width - 1;
 
-                if (Val16ToVal8(PixValue16[xx, y]) <= temp)
+                if (PixValue16[xx, y] <= temp)
                 {
                     temp = ValZnach(znach[0], light, znach[i - 1]);
 
