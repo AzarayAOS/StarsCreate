@@ -11,7 +11,7 @@ namespace StarsCreate
     {
         private int[,] PixValue16;      // массив значений пикселей 16 битного холста
 
-        private int[,] Noiz16;          // массив шума
+        //private int[,] Noiz16;          // массив шума
 
         private float[] PixTrack;       // одномерный массив трека
 
@@ -86,7 +86,7 @@ namespace StarsCreate
             rd = new Random();
 
             PixValue16 = new int[W, H];
-            Noiz16 = new int[W, H];
+            //Noiz16 = new int[W, H];
             PixTrack = new float[W * H];
 
             for (int i = 0; i < W; i++)
@@ -163,7 +163,7 @@ namespace StarsCreate
         /// </summary>
         public void AddNoise()
         {
-            Noiz16 = Mass1To2(PNG_Trace_adder.AddGaussianNoise(Mass2To1(PixValue16), Noise));
+            int[,] Noiz16 = Mass1To2(PNG_Trace_adder.AddGaussianNoise(Mass2To1(PixValue16), Noise));
 
             for (int i = 0; i < W; i++)
                 for (int j = 0; j < H; j++)
@@ -380,6 +380,45 @@ namespace StarsCreate
             if (x == y)
                 Pixel_circle16(xc, yc, x, y, pixel);
         }
+
+        ///// <summary>
+        ///// Попиксельная отрисовка окружности алгоритмом Брезенхэма
+        ///// </summary>
+        ///// <param name="x">Координаты центра окружности по оси ОХ</param>
+        ///// <param name="y">Координаты центра окружности по оси ОХКоординаты центра окружности по оси ОХ</param>
+        ///// <param name="r">Радиус окружности</param>
+        ///// <param name="pixel">Яркость пикселей данной окружности</param>
+        //private void DrawElips(int x1, int y1, int r, int pixel)
+        //{
+        //    int x = 0, y = r;
+
+        //    int delta = 1 - 2 * r;
+        //    int error = 0;
+
+        //    while (y >= 0)
+        //    {
+        //        //(x1+x,y1+y)
+        //        //(x1+x,y1-y)
+        //        //(x1-x,y1+y)
+        //        //(x1-x,y1-y)
+
+        //        error = 2 * (delta + y) - 1;
+
+        //        if ((delta < 0) && (error <= 0))
+        //        {
+        //            delta += 2 * ++x + 1;
+        //            continue;
+        //        }
+
+        //        if ((delta > 0) && (error > 0))
+        //        {
+        //            delta -= 2 * --y + 1;
+        //            continue;
+        //        }
+
+        //        delta += 2 * (++x - y--);
+        //    }
+        //}
 
         /// <summary>
         /// Создать звёзды
