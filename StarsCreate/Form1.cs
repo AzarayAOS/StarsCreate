@@ -196,6 +196,11 @@ namespace StarsCreate
 
         private void Button7_Click(object sender, EventArgs e)
         {
+            if (System.IO.Directory.Exists(textBox8.Text))
+            {
+                FileNameDir = textBox8.Text;
+            }
+
             st.Restart();
             st.Start();
 
@@ -310,6 +315,11 @@ namespace StarsCreate
         {
             if (flagprocces)
             {
+                if (System.IO.Directory.Exists(textBox8.Text))
+                {
+                    FileNameDir = textBox8.Text;
+                }
+
                 threads.Clear();
                 kol = Convert.ToInt32(textBox6.Text);
                 KolParallel = Convert.ToInt32(textBox7.Text);
