@@ -45,21 +45,21 @@ namespace StarsCreate
 
     public partial class Form1 : Form
     {
-        private Random rd;          // рандомайзер
+        private readonly Random rd;          // рандомайзер
 
         public float Et;
         public int spp = 4;
         public float sigm = 1;
         private bool flagprocces;   // флаг запуска процесса генерации серии кадров
 
-        private List<Thread> threads = new List<Thread>();
+        private readonly List<Thread> threads = new List<Thread>();
 
         private ParamContent[] Pc;
         public CreatePicture CreatePic;
         public int KolParallel = 2;         // количество потоков
         public int FinishThread;            // количество завершенных потоков
 
-        private Stopwatch st = new Stopwatch();     // для подсчёта времени
+        private readonly Stopwatch st = new Stopwatch();     // для подсчёта времени
 
         public int kol;                             // количество изображений
 
@@ -448,11 +448,12 @@ namespace StarsCreate
 
         private void Button9_Click(object sender, EventArgs e)
         {
-            FolderBrowserDialog Fbd = new FolderBrowserDialog
+            FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog
             {
                 SelectedPath = FileNameDir,
                 Description = "Укажите пусть к папке, в которую будут сохраняться сгенерированные изображения."
             };
+            FolderBrowserDialog Fbd = folderBrowserDialog;
 
             if (Fbd.ShowDialog() == DialogResult.OK)
             {
