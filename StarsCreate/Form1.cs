@@ -169,14 +169,15 @@ namespace StarsCreate
 
         private void TextBox3_TextChanged(object sender, EventArgs e)
         {
-            if (!string.IsNullOrEmpty(textBox3.Text))
-            {
+            
+            
                 int a = Convert.ToInt32(textBox3.Text);
 
                 if (a > Convert.ToInt32(textBox4.Text.Length > 0 ? textBox4.Text : "0"))
 
-                    textBox3.Text = textBox4.Text;
-            }
+                    if (!string.IsNullOrEmpty(textBox3.Text))
+                        textBox3.Text = textBox4.Text;
+            
         }
 
         private void TextBox5_KeyPress(object sender, KeyPressEventArgs e)
