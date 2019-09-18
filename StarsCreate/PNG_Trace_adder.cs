@@ -25,7 +25,7 @@ namespace StarsCreate
         /// </summary>
         /// <param name="x">Аргумент</param>
         /// <returns><paramref name="x"/>^2</returns>
-        private static double sqr(double x)
+        private static double Sqr(double x)
         {
             return x * x;
         }
@@ -150,8 +150,8 @@ namespace StarsCreate
 
             float[] erf_liney = new float[30];
             float[] erf_linex = new float[30];
-            double t = 0;
-            double t1 = 0;
+            double t;
+            double t1;
             for (int jy = jy_f - 1; jy <= jy_l; jy++)
             {
                 t = (Convert.ToDouble(jy) + 0.5 - yp) * c;

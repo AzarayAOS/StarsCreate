@@ -9,34 +9,47 @@ namespace StarsCreate
     /// </summary>
     public class CreatePicture
     {
-        private int[,] PixValue16;      // массив значений пикселей 16 битного холста
+        private int[,] PixValue16;          // массив значений пикселей 16 битного холста
 
-        //private int[,] Noiz16;          // массив шума
+        //private int[,] Noiz16;            // массив шума
 
-        private float[] PixTrack;       // одномерный массив трека
+        private float[] PixTrack;           // одномерный массив трека
 
-        public int H { get; set; }      // размеры холста, высота
+        public int H { get => h; set => h = value; }      // размеры холста, высота
 
-        public int W { get; set; }      // размеры холста, ширина
+        public int W { get => w; set => w = value; }      // размеры холста, ширина
 
-        public string FileName { get; set; }    // пусть к сохраняемому файлу
+        public string FileName { get => fileName; set => fileName = value; }    // пусть к сохраняемому файлу
 
-        public int Noise { get; set; } // шум на изображение
+        public int Noise { get => noise; set => noise = value; }    // шум на изображение
         private Random rd;              // рандомайзер
         private Bitmap bm;              // 16 битный холст
+        private int h;
+        private int w;
+        private string fileName;
+        private int noise;
+        private int kolstars;
+        private int podstConst;
+        private float et;
+        private int spp;
+        private float sigm;
+        private bool fStar;
+        private bool fNoise;
+        private bool fTrack;
+        private bool fTrackTxt;
 
-        public int Kolstars { get; set; }          // Количество генерируемых звёзд
+        public int Kolstars { get => kolstars; set => kolstars = value; }       // Количество генерируемых звёзд
 
-        public int PodstConst { get; set; }        // Подставка под матрицу
+        public int PodstConst { get => podstConst; set => podstConst = value; } // Подставка под матрицу
 
-        public float Et { get; set; }               // Энергия трека
-        public int Spp { get; set; }                // Шаг отрисовки трека
-        public float Sigm { get; set; }             // Ширина трека и концентрация энергии
+        public float Et { get => et; set => et = value; }                       // Энергия трека
+        public int Spp { get => spp; set => spp = value; }                      // Шаг отрисовки трека
+        public float Sigm { get => sigm; set => sigm = value; }                 // Ширина трека и концентрация энергии
 
-        public bool FStar { get; set; }             // флаг необходимой генерации звёзд
-        public bool FNoise { get; set; }            // флаг необходимой генерации шума
-        public bool FTrack { get; set; }            // флаг необходимости генерации трека
-        public bool FTrackTxt { get; set; }         // флаг создания текстового файла с координатами трека
+        public bool FStar { get => fStar; set => fStar = value; }               // флаг необходимой генерации звёзд
+        public bool FNoise { get => fNoise; set => fNoise = value; }            // флаг необходимой генерации шума
+        public bool FTrack { get => fTrack; set => fTrack = value; }            // флаг необходимости генерации трека
+        public bool FTrackTxt { get => fTrackTxt; set => fTrackTxt = value; }   // флаг создания текстового файла с координатами трека
 
         /// <summary>
         /// конструктор класса генерации изображения
@@ -86,7 +99,6 @@ namespace StarsCreate
             rd = new Random();
 
             PixValue16 = new int[W, H];
-            //Noiz16 = new int[W, H];
             PixTrack = new float[W * H];
 
             for (int i = 0; i < W; i++)
@@ -152,7 +164,8 @@ namespace StarsCreate
         private void AddZnach(int x, int y, int value)
         {
             //if (PixValue16[x, y] < value)
-            PixValue16[x, y] = value;
+            //PixValue16[x, y] = value;
+            PixValue16[x, y] = PixValue16[x, y] < value ? value : PixValue16[x, y];
 
             PixValue16[x, y] = PixValue16[x, y] >= 65535 ? 65535 : PixValue16[x, y];
             PixValue16[x, y] = PixValue16[x, y] <= 0 ? 0 : PixValue16[x, y];

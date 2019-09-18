@@ -52,7 +52,7 @@ namespace StarsCreate
         public float sigm = 1;
         private bool flagprocces;   // флаг запуска процесса генерации серии кадров
 
-        private readonly List<Thread> threads = new List<Thread>();
+        private List<Thread> threads = new List<Thread>();
 
         private ParamContent[] Pc;
         public CreatePicture CreatePic;
@@ -448,12 +448,11 @@ namespace StarsCreate
 
         private void Button9_Click(object sender, EventArgs e)
         {
-            FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog
+            FolderBrowserDialog Fbd = new FolderBrowserDialog
             {
                 SelectedPath = FileNameDir,
                 Description = "Укажите пусть к папке, в которую будут сохраняться сгенерированные изображения."
             };
-            FolderBrowserDialog Fbd = folderBrowserDialog;
 
             if (Fbd.ShowDialog() == DialogResult.OK)
             {
