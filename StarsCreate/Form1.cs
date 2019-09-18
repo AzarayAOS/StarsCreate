@@ -298,8 +298,8 @@ namespace StarsCreate
         {
             long s;
             s = t * kol;
-            s = s / x;
-            s = s - t;
+            s /= x;
+            s -= t;
 
             DateTime date = new DateTime(s);
 
