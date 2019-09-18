@@ -448,9 +448,11 @@ namespace StarsCreate
 
         private void Button9_Click(object sender, EventArgs e)
         {
-            FolderBrowserDialog Fbd = new FolderBrowserDialog();
-            Fbd.SelectedPath = FileNameDir;
-            Fbd.Description = "Укажите пусть к папке, в которую будут сохраняться сгенерированные изображения.";
+            FolderBrowserDialog Fbd = new FolderBrowserDialog
+            {
+                SelectedPath = FileNameDir,
+                Description = "Укажите пусть к папке, в которую будут сохраняться сгенерированные изображения."
+            };
 
             if (Fbd.ShowDialog() == DialogResult.OK)
             {
