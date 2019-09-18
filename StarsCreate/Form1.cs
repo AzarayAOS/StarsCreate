@@ -20,10 +20,12 @@ namespace StarsCreate
     /// </summary>
     internal struct ParamContent
     {
-        public SynchronizationContext uiContext;
+        private SynchronizationContext uiContext;
         public int kol;
         public int StartValue;
         public int Step;
+
+        public SynchronizationContext UiContext { get => uiContext; set => uiContext = value; }
 
         /// <summary>
         /// Инициализатор
@@ -213,7 +215,7 @@ namespace StarsCreate
                     Convert.ToSingle(textBox5.Text.Length > 0 ? textBox5.Text : "0"),       // Энергия трека
                     spp,
                     sigm,
-                    FileNameDir + "\\1",                    // пусть сохранения
+                    FileNameDir + "1",                      // пусть сохранения
                     checkBox1.Checked,                      // разрешение на генерацию звёзд
                     checkBox2.Checked,                      // разрешение на генерацию шума
                     checkBox3.Checked,                      // разрешение на генерацию трека
@@ -389,7 +391,7 @@ namespace StarsCreate
 
             // вытащим контекст синхронизации из state'а
             //SynchronizationContext uiContext = state as SynchronizationContext;
-            SynchronizationContext uiContent = Pc.uiContext;
+            SynchronizationContext uiContent = Pc.UiContext;
             int kol = Pc.kol;
             uiContext.Post(UpdateUI, "StartProccec");
 
@@ -407,7 +409,7 @@ namespace StarsCreate
                     Convert.ToSingle(textBox5.Text.Length > 0 ? textBox5.Text : "0"),       // Энергия трека
                     spp,
                     sigm,
-                    FileNameDir + "\\" + i.ToString(),      // пусть сохранения
+                    FileNameDir + i.ToString(),             // пусть сохранения
                     checkBox1.Checked,                      // разрешение на генерацию звёзд
                     checkBox2.Checked,                      // разрешение на генерацию шума
                     checkBox3.Checked,                      // разрешение на генерацию трека
@@ -418,7 +420,7 @@ namespace StarsCreate
 
                     uiContext.Post(UpdateUI, "WorkProccec");
                 }
-                catch (ThreadAbortException exc)
+                catch (ThreadAbortException)
                 {
                     uiContext.Post(UpdateUI, "Поток прерван!!!");
                 }
