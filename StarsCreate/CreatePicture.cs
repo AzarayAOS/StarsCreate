@@ -156,16 +156,22 @@ namespace StarsCreate
 
         /// <summary>
         /// Добавляет в пиксель с координатами (<paramref name="x"/>, <paramref name="y"/>)
-        /// значение <paramref name="value"/>
+        /// значение <paramref name="value"/>, при <paramref name="max_value"/> равное true
+        /// меньшее значение пикселей перекрывается большим,
+        /// при <paramref name="max_value"/> равное false пиксель строго окрашивается в значение <paramref name="value"/>
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <param name="value"></param>
-        private void AddZnach(int x, int y, int value)
+        /// <param name="max_value"></param>
+        private void AddZnach(int x, int y, int value, bool max_value = true)
         {
             //if (PixValue16[x, y] < value)
             //PixValue16[x, y] = value;
-            PixValue16[x, y] = PixValue16[x, y] < value ? value : PixValue16[x, y];
+            if (max_value)
+                PixValue16[x, y] = PixValue16[x, y] < value ? value : PixValue16[x, y];
+            else
+                PixValue16[x, y] = value;
 
             PixValue16[x, y] = PixValue16[x, y] >= 65535 ? 65535 : PixValue16[x, y];
             PixValue16[x, y] = PixValue16[x, y] <= 0 ? 0 : PixValue16[x, y];
@@ -180,7 +186,7 @@ namespace StarsCreate
 
             for (int i = 0; i < W; i++)
                 for (int j = 0; j < H; j++)
-                    AddZnach(i, j, Noiz16[i, j]);
+                    AddZnach(i, j, Noiz16[i, j], false);
         }
 
         /// <summary>
@@ -393,45 +399,6 @@ namespace StarsCreate
             if (x == y)
                 Pixel_circle16(xc, yc, x, y, pixel);
         }
-
-        ///// <summary>
-        ///// Попиксельная отрисовка окружности алгоритмом Брезенхэма
-        ///// </summary>
-        ///// <param name="x">Координаты центра окружности по оси ОХ</param>
-        ///// <param name="y">Координаты центра окружности по оси ОХКоординаты центра окружности по оси ОХ</param>
-        ///// <param name="r">Радиус окружности</param>
-        ///// <param name="pixel">Яркость пикселей данной окружности</param>
-        //private void DrawElips(int x1, int y1, int r, int pixel)
-        //{
-        //    int x = 0, y = r;
-
-        //    int delta = 1 - 2 * r;
-        //    int error = 0;
-
-        //    while (y >= 0)
-        //    {
-        //        //(x1+x,y1+y)
-        //        //(x1+x,y1-y)
-        //        //(x1-x,y1+y)
-        //        //(x1-x,y1-y)
-
-        //        error = 2 * (delta + y) - 1;
-
-        //        if ((delta < 0) && (error <= 0))
-        //        {
-        //            delta += 2 * ++x + 1;
-        //            continue;
-        //        }
-
-        //        if ((delta > 0) && (error > 0))
-        //        {
-        //            delta -= 2 * --y + 1;
-        //            continue;
-        //        }
-
-        //        delta += 2 * (++x - y--);
-        //    }
-        //}
 
         /// <summary>
         /// Создать звёзды

@@ -55,6 +55,7 @@ namespace StarsCreate
             return s ? y : -y;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "SecurityIntelliSenseCS:MS Security rules violation", Justification = "<Ожидание>")]
         public static int[] AddGaussianNoise(int[] form, float noisePower = 20)
         {
             var rnd = new Random();

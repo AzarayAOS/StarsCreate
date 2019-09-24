@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -9,7 +10,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Diagnostics;
 using System.Windows.Forms;
 using System.Windows.Media.Imaging;
 
@@ -108,7 +108,7 @@ namespace StarsCreate
                     checkBox2.Checked,                      // разрешение на генерацию шума
                     checkBox3.Checked,                      // разрешение на генерацию трека
                     checkBox4.Checked                       // разрешение на запись координат трека в файл
-                    );
+                                         );
         }
 
         private void Button2_Click(object sender, EventArgs e)
@@ -169,15 +169,12 @@ namespace StarsCreate
 
         private void TextBox3_TextChanged(object sender, EventArgs e)
         {
-            
-            
-                int a = Convert.ToInt32(textBox3.Text);
+            int a = Convert.ToInt32(textBox3.Text);
 
-                if (a > Convert.ToInt32(textBox4.Text.Length > 0 ? textBox4.Text : "0"))
+            if (a > Convert.ToInt32(textBox4.Text.Length > 0 ? textBox4.Text : "0"))
 
-                    if (!string.IsNullOrEmpty(textBox3.Text))
-                        textBox3.Text = textBox4.Text;
-            
+                if (!string.IsNullOrEmpty(textBox3.Text))
+                    textBox3.Text = textBox4.Text;
         }
 
         private void TextBox5_KeyPress(object sender, KeyPressEventArgs e)
@@ -208,7 +205,7 @@ namespace StarsCreate
             st.Start();
 
             CreatePicture CreatePic2 = new CreatePicture(
-                    Convert.ToInt32(textBox2.Text.Length > 0 ? textBox2.Text : "0"),        // ширина
+                Convert.ToInt32(textBox2.Text.Length > 0 ? textBox2.Text : "0"),        // ширина
                     Convert.ToInt32(textBox1.Text.Length > 0 ? textBox1.Text : "0"),        // высота
                     rd.Next(100, 500),                                                      // количество генерируемых звёзд
                     Convert.ToInt32(textBox3.Text.Length > 0 ? textBox3.Text : "0"),        // Шум
@@ -221,7 +218,7 @@ namespace StarsCreate
                     checkBox2.Checked,                      // разрешение на генерацию шума
                     checkBox3.Checked,                      // разрешение на генерацию трека
                     checkBox4.Checked                       // разрешение на запись координат трека в файл
-                    );
+                                                        );
             CreatePic2.StartCreate();
             st.Stop();
             toolStripStatusLabel2.Text = progressBar1.Value.ToString();
@@ -386,6 +383,7 @@ namespace StarsCreate
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "SecurityIntelliSenseCS:MS Security rules violation", Justification = "<Ожидание>")]
         private void Procces(object state)
         {
             ParamContent Pc = (ParamContent)state;
@@ -415,7 +413,7 @@ namespace StarsCreate
                     checkBox2.Checked,                      // разрешение на генерацию шума
                     checkBox3.Checked,                      // разрешение на генерацию трека
                     checkBox4.Checked                       // разрешение на запись координат трека в файл
-                    );
+                                                                );
 
                     CreatePic1.StartCreate();
 
