@@ -329,6 +329,7 @@ namespace StarsCreate
                 st.Restart();
                 st.Start();
                 progressBar1.Maximum = kol;
+
                 progressBar1.Value = 0;
                 uiContext = SynchronizationContext.Current;
                 //Pc.uiContext = uiContext;
