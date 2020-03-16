@@ -54,19 +54,45 @@ namespace StarsCreate
         /// <summary>
         /// конструктор класса генерации изображения
         /// </summary>
-        /// <param name="w">Ширина изображения</param>
-        /// <param name="h">Высота изображения</param>
-        /// <param name="kolstars">Количество генерируемых звёзд на изображении</param>
-        /// <param name="Noise">Шум, накладываемый на изображение</param>
-        /// <param name="PodstConst">Константная подставка под изображение</param>
-        /// <param name="Et">Энергия трека</param>
-        /// <param name="spp">Шаг отрисовка трека</param>
-        /// <param name="sigm">Сигма распределения трека по ширине</param>
-        /// <param name="filename">Пусть к файлу сохранения</param>
-        /// <param name="FStar">Генерировать ли звёзды</param>
-        /// <param name="FNoise">Генерировать ли шум</param>
-        /// <param name="FTrack">Генерировать ли трек</param>
-        /// <param name="FTrackTxt">Записывать ли координаты трека в *.txt</param>
+        /// <param name="w">
+        /// Ширина изображения
+        /// </param>
+        /// <param name="h">
+        /// Высота изображения
+        /// </param>
+        /// <param name="kolstars">
+        /// Количество генерируемых звёзд на изображении
+        /// </param>
+        /// <param name="Noise">
+        /// Шум, накладываемый на изображение
+        /// </param>
+        /// <param name="PodstConst">
+        /// Константная подставка под изображение
+        /// </param>
+        /// <param name="Et">
+        /// Энергия трека
+        /// </param>
+        /// <param name="spp">
+        /// Шаг отрисовка трека
+        /// </param>
+        /// <param name="sigm">
+        /// Сигма распределения трека по ширине
+        /// </param>
+        /// <param name="filename">
+        /// Пусть к файлу сохранения
+        /// </param>
+        /// <param name="FStar">
+        /// Генерировать ли звёзды
+        /// </param>
+        /// <param name="FNoise">
+        /// Генерировать ли шум
+        /// </param>
+        /// <param name="FTrack">
+        /// Генерировать ли трек
+        /// </param>
+        /// <param name="FTrackTxt">
+        /// Записывать ли координаты трека в *.txt
+        /// </param>
         public CreatePicture(
             int w,
             int h,
@@ -111,7 +137,8 @@ namespace StarsCreate
         /// <summary>
         /// Возвращает массив пикселей
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// </returns>
         public int[,] GetPixel16()
         {
             return PixValue16;
@@ -120,7 +147,8 @@ namespace StarsCreate
         /// <summary>
         /// Возвращает карту пикселей
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// </returns>
         public Bitmap GetBitmap()
         {
             return bm;
@@ -135,9 +163,8 @@ namespace StarsCreate
         }
 
         /// <summary>
-        /// Программа, выполняющая последовательность по созданию,
-        /// генерированию звёзд, генерированию шума, наложению трека
-        /// и сохранения в файл
+        /// Программа, выполняющая последовательность по созданию, генерированию звёзд,
+        /// генерированию шума, наложению трека и сохранения в файл
         /// </summary>
         public void StartCreate()
         {
@@ -155,15 +182,19 @@ namespace StarsCreate
         }
 
         /// <summary>
-        /// Добавляет в пиксель с координатами (<paramref name="x"/>, <paramref name="y"/>)
-        /// значение <paramref name="value"/>, при <paramref name="max_value"/> равное true
-        /// меньшее значение пикселей перекрывается большим,
-        /// при <paramref name="max_value"/> равное false пиксель строго окрашивается в значение <paramref name="value"/>
+        /// Добавляет в пиксель с координатами ( <paramref name="x" />, <paramref name="y" />)
+        /// значение <paramref name="value" />, при <paramref name="max_value" /> равное true
+        /// меньшее значение пикселей перекрывается большим, при <paramref name="max_value" />
+        /// равное false пиксель строго окрашивается в значение <paramref name="value" />
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="value"></param>
-        /// <param name="max_value"></param>
+        /// <param name="x">
+        /// </param>
+        /// <param name="y">
+        /// </param>
+        /// <param name="value">
+        /// </param>
+        /// <param name="max_value">
+        /// </param>
         private void AddZnach(int x, int y, int value, bool max_value = true)
         {
             //if (PixValue16[x, y] < value)
@@ -192,10 +223,18 @@ namespace StarsCreate
         /// <summary>
         /// Пропорциональный перевод значения из одного диапазона, в другой
         /// </summary>
-        /// <param name="Vakslokal">Максимальное значение из вычисленного</param>
-        /// <param name="maxznach">Максимальное значение из нового диапазона</param>
-        /// <param name="value">Текущее значение</param>
-        /// <returns>Текущее значение в новом диапазоне</returns>
+        /// <param name="Vakslokal">
+        /// Максимальное значение из вычисленного
+        /// </param>
+        /// <param name="maxznach">
+        /// Максимальное значение из нового диапазона
+        /// </param>
+        /// <param name="value">
+        /// Текущее значение
+        /// </param>
+        /// <returns>
+        /// Текущее значение в новом диапазоне
+        /// </returns>
         private static int ValZnach(double Vakslokal, int maxznach, double value)
         {
             double t = value * maxznach / Vakslokal;
@@ -205,10 +244,17 @@ namespace StarsCreate
         /// <summary>
         /// Функция распределения Гаусса
         /// </summary>
-        /// <param name="x">Текущая координата</param>
-        /// <param name="d">Ширина расплёска</param>
-        /// <param name="u">Положение максимума энергии</param>
-        /// <returns></returns>
+        /// <param name="x">
+        /// Текущая координата
+        /// </param>
+        /// <param name="d">
+        /// Ширина расплёска
+        /// </param>
+        /// <param name="u">
+        /// Положение максимума энергии
+        /// </param>
+        /// <returns>
+        /// </returns>
         private static double Gauss(double x, double d, double u)
         {
             double a = 1 / (d * Math.Sqrt(2 * Math.PI));
@@ -293,10 +339,16 @@ namespace StarsCreate
         /// <summary>
         /// Подсветка пикселя и пикселей вокруг стоящих, 16бит
         /// </summary>
-        /// <param name="x">координата по горизонтале</param>
-        /// <param name="y">Координата по вертикале</param>
-        /// <param name="pixel">Яркость пикселя</param>
-        private void Pixel_circle16_cikl(int x, int y, int pixel)
+        /// <param name="x">
+        /// координата по горизонтале
+        /// </param>
+        /// <param name="y">
+        /// Координата по вертикале
+        /// </param>
+        /// <param name="pixel">
+        /// Яркость пикселя
+        /// </param>
+        private void Pixel_circle16_cikl(int x, int y, double pixel)
         {
             ushort ttt = Convert.ToUInt16(pixel);
             int x1, x2, x3, x4;
@@ -318,22 +370,63 @@ namespace StarsCreate
             y2 = y2 >= 0 ? y2 : 0;
             y4 = y4 < H ? y4 : H - 1;
 
-            AddZnach(x, y, pixel);
-            AddZnach(x1, y1, pixel);
-            AddZnach(x2, y2, pixel);
-            AddZnach(x3, y3, pixel);
-            AddZnach(x4, y4, pixel);
+            int pixelInt = Convert.ToInt32(pixel);
+
+            AddZnach(x, y, pixelInt);
+            AddZnach(x1, y1, pixelInt);
+            AddZnach(x2, y2, pixelInt);
+            AddZnach(x3, y3, pixelInt);
+            AddZnach(x4, y4, pixelInt);
+        }
+
+        /// <summary>
+        /// Энергия пикселя [ <paramref name="x1" />; <paramref name="y1" />] относительно звезды с
+        /// координатами [ <paramref name="x" />; <paramref name="y" />] со звёздной величиной <paramref name="mgt" />.
+        /// </summary>
+        private double Energia(int x, int y, int x1, int y1, double mgt)
+        {
+            const double mult = 1000;   // множитель
+            const double s = 4.6979157650179255;
+            double signal = Math.Pow(10, (4 - mgt / 2.5));
+            return signal * ((Erf((x - x1 + 1) / s) - Erf((x - x1) / s)) *
+                (Erf((y - y1 + 1) / s) - Erf((y - y1) / s))) * mult;
+        }
+
+        // Функция ошибки Гаусса
+        private double Erf(double xx)
+        {
+            const double a1 = 0.254829592;
+            const double a2 = -0.284496736;
+            const double a3 = 1.421413741;
+            const double a4 = -1.453152027;
+            const double a5 = 1.061405429;
+            const double p = 0.3275911;
+
+            int sign = 1;
+            if (xx < 0)
+                sign = -1;
+            xx = Math.Abs(xx);
+
+            double t = 1.0 / (1.0 + p * xx);
+            double yy = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.Exp(-xx * xx);
+
+            return sign * yy;
         }
 
         /// <summary>
         /// Подсветка определённых пикселей с учётом границ изображения, 16 бит
         /// </summary>
-        /// <param name="xc"></param>
-        /// <param name="yc"></param>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="pixel"></param>
-        private void Pixel_circle16(int xc, int yc, int x, int y, int pixel)
+        /// <param name="xc">
+        /// </param>
+        /// <param name="yc">
+        /// </param>
+        /// <param name="x">
+        /// </param>
+        /// <param name="y">
+        /// </param>
+        /// <param name="pixel">
+        /// </param>
+        private void Pixel_circle16(int xc, int yc, int x, int y, double pixel)
         {
             int x1, x2, x3, x4;
             int y1, y2, y3, y4;
@@ -376,11 +469,19 @@ namespace StarsCreate
         /// <summary>
         /// Алгоритм попиксельного рендеринга окружности, 16 бит
         /// </summary>
-        /// <param name="xc">центр окружности по горизонтале</param>
-        /// <param name="yc">центр окружности по вертикале</param>
-        /// <param name="r">Радиус окружности</param>
-        /// <param name="pixel">Яркость окраски</param>
-        private void V_MIcirc16(int xc, int yc, int r, int pixel)
+        /// <param name="xc">
+        /// центр окружности по горизонтале
+        /// </param>
+        /// <param name="yc">
+        /// центр окружности по вертикале
+        /// </param>
+        /// <param name="r">
+        /// Радиус окружности
+        /// </param>
+        /// <param name="pixel">
+        /// Яркость окраски
+        /// </param>
+        private void V_MIcirc16(int xc, int yc, int r, double pixel)
         {
             int x = 0, y = r, d = 3 - 2 * r;
 
@@ -420,25 +521,35 @@ namespace StarsCreate
             x = rd.Next(1, bm.Width);
             y = rd.Next(1, bm.Height);
 
-            int radgaus = rd.Next(1, 5);
-
-            int light = rd.Next(256, 65535);
-
-            znach = new double[radius];
-
-            for (int i = 0; i < radius; i++)
-                znach[i] = Gauss(x + i, radgaus, x);
-
-            for (int i = 1; i <= radius; i++)
+            double radgaus = 0;
+            double mgt = rd.Next(1, 50) / 10.0;
+            double enegr;
+            while (radgaus <= W)
             {
-                int temp = ValZnach(znach[0], Convert.ToInt32(light), znach[i - 1]);
-                int xx = x + i < bm.Width ? x + i : bm.Width - 1;
+                enegr = Energia(x, y, (x > W / 2 ? x + 1 : x - 1), y, Convert.ToDouble(mgt));
+                radgaus++;
+                if (enegr < Noise)
+                    break;
 
-                if (PixValue16[xx, y] <= temp)
+                if ((radgaus < 0) || (radgaus >= W))
+                    break;
+            }
+
+            //znach = new double[radius];
+
+            //for (int i = 0; i < radius; i++)
+            //    znach[i] = Gauss(x + i, radgaus, x);
+
+            for (int i = 0; i <= radius; i++)
+            {
+                //int temp = ValZnach(znach[0], Convert.ToInt32(mgt), znach[i - 1]);
+                //int xx = x + i < bm.Width ? x + i : bm.Width - 1;
+
+                //if (PixValue16[xx, y] <= temp)
                 {
-                    temp = ValZnach(znach[0], light, znach[i - 1]);
+                    //temp = ValZnach(znach[0], Convert.ToInt32(mgt), znach[i - 1]);
 
-                    V_MIcirc16(x, y, i, temp);
+                    V_MIcirc16(x, y, i, mgt);
                 }
             }
         }
