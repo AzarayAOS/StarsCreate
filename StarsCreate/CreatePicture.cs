@@ -350,7 +350,8 @@ namespace StarsCreate
         /// </param>
         private void Pixel_circle16_cikl(int x, int y, double mgt)
         {
-            ushort ttt = Convert.ToUInt16(mgt);
+            ushort ttt = mgt > System.UInt16.MaxValue ? System.UInt16.MaxValue : Convert.ToUInt16(mgt);
+
             int x1, x2, x3, x4;
             int y1, y2, y3, y4;
 
@@ -385,7 +386,7 @@ namespace StarsCreate
         /// </summary>
         private double Energia(int x, int y, int x1, int y1, double mgt)
         {
-            const double mult = 1000;   // множитель
+            const double mult = 5;   // множитель
             const double s = 4.6979157650179255;
             double signal = Math.Pow(10, (4 - mgt / 2.5));
             return signal * ((Erf((x - x1 + 1) / s) - Erf((x - x1) / s)) *
@@ -512,6 +513,13 @@ namespace StarsCreate
                 CretStarVal();
         }
 
+        private void CreateStarEnerg(int xc, int yc, int r, double mgt)
+        {
+            for (int i = xc - r > 0 ? xc - r : 0; i <= (xc + r < W ? xc + r : W - 1); i++)
+                for (int j = yc - r > 0 ? yc - r : 0; j <= (yc + r < H ? yc + r : H - 1); j++)
+                    Pixel_circle16(xc, yc, i, j, mgt);
+        }
+
         /// <summary>
         /// Создать одну звезду в случайном месте
         /// </summary>
@@ -542,7 +550,7 @@ namespace StarsCreate
             //for (int i = 0; i < radius; i++)
             //    znach[i] = Gauss(x + i, radgaus, x);
 
-            for (int i = 0; i <= radgaus; i++)
+            for (int i = 0; i <= radgaus * 2; i++)
             {
                 //int temp = ValZnach(znach[0], Convert.ToInt32(mgt), znach[i - 1]);
                 //int xx = x + i < bm.Width ? x + i : bm.Width - 1;
@@ -550,8 +558,8 @@ namespace StarsCreate
                 //if (PixValue16[xx, y] <= temp)
                 {
                     //temp = ValZnach(znach[0], Convert.ToInt32(mgt), znach[i - 1]);
-
-                    V_MIcirc16(x, y, i, mgt);
+                    CreateStarEnerg(x, y, i, mgt);
+                    //V_MIcirc16(x, y, i, mgt);
                 }
             }
         }
