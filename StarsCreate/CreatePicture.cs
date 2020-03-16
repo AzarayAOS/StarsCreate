@@ -345,12 +345,12 @@ namespace StarsCreate
         /// <param name="y">
         /// Координата по вертикале
         /// </param>
-        /// <param name="pixel">
+        /// <param name="mgt">
         /// Яркость пикселя
         /// </param>
-        private void Pixel_circle16_cikl(int x, int y, double pixel)
+        private void Pixel_circle16_cikl(int x, int y, double mgt)
         {
-            ushort ttt = Convert.ToUInt16(pixel);
+            ushort ttt = Convert.ToUInt16(mgt);
             int x1, x2, x3, x4;
             int y1, y2, y3, y4;
 
@@ -370,7 +370,7 @@ namespace StarsCreate
             y2 = y2 >= 0 ? y2 : 0;
             y4 = y4 < H ? y4 : H - 1;
 
-            int pixelInt = Convert.ToInt32(pixel);
+            int pixelInt = Convert.ToInt32(mgt);
 
             AddZnach(x, y, pixelInt);
             AddZnach(x1, y1, pixelInt);
@@ -424,9 +424,9 @@ namespace StarsCreate
         /// </param>
         /// <param name="y">
         /// </param>
-        /// <param name="pixel">
+        /// <param name="mgt">
         /// </param>
-        private void Pixel_circle16(int xc, int yc, int x, int y, double pixel)
+        private void Pixel_circle16(int xc, int yc, int x, int y, double mgt)
         {
             int x1, x2, x3, x4;
             int y1, y2, y3, y4;
@@ -456,14 +456,16 @@ namespace StarsCreate
             y4 = yc - y < H ? yc - y : H - 1;
             y4 = y4 >= 0 ? y4 : 0;
 
-            Pixel_circle16_cikl(x1, y1, pixel);
-            Pixel_circle16_cikl(x2, y2, pixel);
-            Pixel_circle16_cikl(x2, y3, pixel);
-            Pixel_circle16_cikl(x1, y4, pixel);
-            Pixel_circle16_cikl(x3, y4, pixel);
-            Pixel_circle16_cikl(x4, y3, pixel);
-            Pixel_circle16_cikl(x4, y2, pixel);
-            Pixel_circle16_cikl(x3, y1, pixel);
+            double PixEnergy = Energia(xc, yc, x, y, mgt);
+
+            Pixel_circle16_cikl(x1, y1, PixEnergy);
+            Pixel_circle16_cikl(x2, y2, PixEnergy);
+            Pixel_circle16_cikl(x2, y3, PixEnergy);
+            Pixel_circle16_cikl(x1, y4, PixEnergy);
+            Pixel_circle16_cikl(x3, y4, PixEnergy);
+            Pixel_circle16_cikl(x4, y3, PixEnergy);
+            Pixel_circle16_cikl(x4, y2, PixEnergy);
+            Pixel_circle16_cikl(x3, y1, PixEnergy);
         }
 
         /// <summary>
@@ -478,16 +480,16 @@ namespace StarsCreate
         /// <param name="r">
         /// Радиус окружности
         /// </param>
-        /// <param name="pixel">
+        /// <param name="mgt">
         /// Яркость окраски
         /// </param>
-        private void V_MIcirc16(int xc, int yc, int r, double pixel)
+        private void V_MIcirc16(int xc, int yc, int r, double mgt)
         {
             int x = 0, y = r, d = 3 - 2 * r;
 
             while (x < y)
             {
-                Pixel_circle16(xc, yc, x, y, pixel);
+                Pixel_circle16(xc, yc, x, y, mgt);
                 if (d < 0)
                     d = d + 4 * x + 6;
                 else
@@ -498,7 +500,7 @@ namespace StarsCreate
                 ++x;
             }
             if (x == y)
-                Pixel_circle16(xc, yc, x, y, pixel);
+                Pixel_circle16(xc, yc, x, y, mgt);
         }
 
         /// <summary>
@@ -515,23 +517,23 @@ namespace StarsCreate
         /// </summary>
         private void CretStarVal()
         {
-            double[] znach;
-            int radius = rd.Next(1, Convert.ToInt32(Math.Min(W, H) / 100));
+            //double[] znach;
+            //int radius = rd.Next(1, Convert.ToInt32(Math.Min(W, H) / 100));
             int x, y;
             x = rd.Next(1, bm.Width);
             y = rd.Next(1, bm.Height);
 
-            double radgaus = 0;
-            double mgt = rd.Next(1, 50) / 10.0;
+            int radgaus = 0;
+            double mgt = rd.Next(1, 30) / 10.0;
             double enegr;
             while (radgaus <= W)
             {
-                enegr = Energia(x, y, (x > W / 2 ? x + 1 : x - 1), y, Convert.ToDouble(mgt));
+                enegr = Energia(x, y, (x > W / 2 ? x + radgaus : x - radgaus), y, Convert.ToDouble(mgt));
                 radgaus++;
                 if (enegr < Noise)
                     break;
 
-                if ((radgaus < 0) || (radgaus >= W))
+                if ((enegr < 0) || (radgaus >= W))
                     break;
             }
 
@@ -540,7 +542,7 @@ namespace StarsCreate
             //for (int i = 0; i < radius; i++)
             //    znach[i] = Gauss(x + i, radgaus, x);
 
-            for (int i = 0; i <= radius; i++)
+            for (int i = 0; i <= radgaus; i++)
             {
                 //int temp = ValZnach(znach[0], Convert.ToInt32(mgt), znach[i - 1]);
                 //int xx = x + i < bm.Width ? x + i : bm.Width - 1;
