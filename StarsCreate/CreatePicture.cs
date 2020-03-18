@@ -108,8 +108,8 @@ namespace StarsCreate
             bool FTrack = true,
             bool FTrackTxt = false)
         {
-            this.W = w;
-            this.H = h;
+            this.W = w + 100;
+            this.H = h + 100;
             this.Kolstars = kolstars;
             this.Noise = Noise;
             this.PodstConst = PodstConst;
@@ -131,7 +131,7 @@ namespace StarsCreate
                 for (int j = 0; j < H; j++)
                     PixValue16[i, j] = this.PodstConst;
 
-            bm = new Bitmap(W, H, System.Drawing.Imaging.PixelFormat.Format16bppGrayScale);
+            bm = new Bitmap(W - 100, H - 100, System.Drawing.Imaging.PixelFormat.Format16bppGrayScale);
         }
 
         /// <summary>
@@ -323,8 +323,8 @@ namespace StarsCreate
             //int temp;
             ushort temp16;
 
-            for (int i = 0; i < W; i++)
-                for (int j = 0; j < H; j++)
+            for (int i = 49; i < W - 51; i++)
+                for (int j = 49; j < H - 51; j++)
                 {
                     //temp = Convert.ToInt32(Val16ToVal8(PixValue16[i, j]));
                     //temp = temp >= 0 ? temp : 0;
@@ -332,7 +332,7 @@ namespace StarsCreate
                     //Imbm.SetPixel(i, j, Color.FromArgb(temp, temp, temp));
 
                     temp16 = Convert.ToUInt16(PixValue16[i, j] >= 0 ? (PixValue16[i, j] <= 65535 ? PixValue16[i, j] : 65535) : 0);
-                    bm.SetPixelFor16bit(i, j, temp16);
+                    bm.SetPixelFor16bit(i - 49, j - 49, temp16);
                 }
         }
 
@@ -386,7 +386,7 @@ namespace StarsCreate
         /// </summary>
         private double Energia(int x, int y, int x1, int y1, double mgt)
         {
-            const double mult = 5;   // множитель
+            const double mult = 10;   // множитель
             const double s = 4.6979157650179255;
             double signal = Math.Pow(10, (4 - mgt / 2.5));
             return signal * ((Erf((x - x1 + 1) / s) - Erf((x - x1) / s)) *
@@ -470,6 +470,18 @@ namespace StarsCreate
         }
 
         /// <summary>
+        /// Подсветка пикселя [ <paramref name="x" />; <paramref name="y" />] звезды с центром в [
+        /// <paramref name="xc" />; <paramref name="yc" />] и звёздной величиной <paramref name="mgt" />
+        /// </summary>
+
+        private void Pixel_16(int xc, int yc, int x, int y, double mgt)
+        {
+            double PixEnergy = Energia(xc, yc, x, y, mgt);
+
+            Pixel_circle16_cikl(x, y, PixEnergy);
+        }
+
+        /// <summary>
         /// Алгоритм попиксельного рендеринга окружности, 16 бит
         /// </summary>
         /// <param name="xc">
@@ -513,11 +525,14 @@ namespace StarsCreate
                 CretStarVal();
         }
 
+        /// <summary>
+        /// вычисление яркости пикселей по квадрату с длинной стороны 2r
+        /// </summary>
         private void CreateStarEnerg(int xc, int yc, int r, double mgt)
         {
             for (int i = xc - r > 0 ? xc - r : 0; i <= (xc + r < W ? xc + r : W - 1); i++)
                 for (int j = yc - r > 0 ? yc - r : 0; j <= (yc + r < H ? yc + r : H - 1); j++)
-                    Pixel_circle16(xc, yc, i, j, mgt);
+                    Pixel_16(xc, yc, i, j, mgt);
         }
 
         /// <summary>
@@ -532,13 +547,13 @@ namespace StarsCreate
             y = rd.Next(1, bm.Height);
 
             int radgaus = 0;
-            double mgt = rd.Next(1, 30) / 10.0;
+            double mgt = 0.5; // rd.Next(1, 30) / 10.0;
             double enegr;
             while (radgaus <= W)
             {
                 enegr = Energia(x, y, (x > W / 2 ? x + radgaus : x - radgaus), y, Convert.ToDouble(mgt));
                 radgaus++;
-                if (enegr < Noise)
+                if (enegr < Noise / 2)
                     break;
 
                 if ((enegr < 0) || (radgaus >= W))
@@ -549,19 +564,18 @@ namespace StarsCreate
 
             //for (int i = 0; i < radius; i++)
             //    znach[i] = Gauss(x + i, radgaus, x);
+            CreateStarEnerg(x, y, radgaus * 10, mgt);
+            //for (int i = 0; i <= radgaus * 3; i++)
+            //{
+            //    //int temp = ValZnach(znach[0], Convert.ToInt32(mgt), znach[i - 1]);
+            //    //int xx = x + i < bm.Width ? x + i : bm.Width - 1;
 
-            for (int i = 0; i <= radgaus * 2; i++)
-            {
-                //int temp = ValZnach(znach[0], Convert.ToInt32(mgt), znach[i - 1]);
-                //int xx = x + i < bm.Width ? x + i : bm.Width - 1;
+            // //if (PixValue16[xx, y] <= temp) { //temp = ValZnach(znach[0], Convert.ToInt32(mgt),
+            // znach[i - 1]);
 
-                //if (PixValue16[xx, y] <= temp)
-                {
-                    //temp = ValZnach(znach[0], Convert.ToInt32(mgt), znach[i - 1]);
-                    CreateStarEnerg(x, y, i, mgt);
-                    //V_MIcirc16(x, y, i, mgt);
-                }
-            }
+            //        //V_MIcirc16(x, y, i, mgt);
+            //    }
+            //}
         }
 
         /// <summary>
