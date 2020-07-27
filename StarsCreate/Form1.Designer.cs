@@ -30,6 +30,12 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.textBox11 = new System.Windows.Forms.TextBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.textBox9 = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.textBox10 = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
@@ -81,6 +87,12 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.textBox11);
+            this.groupBox2.Controls.Add(this.label11);
+            this.groupBox2.Controls.Add(this.textBox9);
+            this.groupBox2.Controls.Add(this.label9);
+            this.groupBox2.Controls.Add(this.textBox10);
+            this.groupBox2.Controls.Add(this.label10);
             this.groupBox2.Controls.Add(this.groupBox5);
             this.groupBox2.Controls.Add(this.button9);
             this.groupBox2.Controls.Add(this.textBox8);
@@ -105,6 +117,60 @@
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Параметры генерации";
+            // 
+            // textBox11
+            // 
+            this.textBox11.Location = new System.Drawing.Point(284, 136);
+            this.textBox11.Name = "textBox11";
+            this.textBox11.Size = new System.Drawing.Size(83, 20);
+            this.textBox11.TabIndex = 28;
+            this.textBox11.Text = "20";
+            this.textBox11.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox9_KeyPress);
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(250, 139);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(28, 13);
+            this.label11.TabIndex = 27;
+            this.label11.Text = "FOV";
+            // 
+            // textBox9
+            // 
+            this.textBox9.Location = new System.Drawing.Point(284, 110);
+            this.textBox9.Name = "textBox9";
+            this.textBox9.Size = new System.Drawing.Size(83, 20);
+            this.textBox9.TabIndex = 26;
+            this.textBox9.Text = "0";
+            this.textBox9.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox9_KeyPress);
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(251, 113);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(27, 13);
+            this.label9.TabIndex = 25;
+            this.label9.Text = "Dec";
+            // 
+            // textBox10
+            // 
+            this.textBox10.Location = new System.Drawing.Point(284, 88);
+            this.textBox10.Name = "textBox10";
+            this.textBox10.Size = new System.Drawing.Size(83, 20);
+            this.textBox10.TabIndex = 24;
+            this.textBox10.Text = "0";
+            this.textBox10.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox9_KeyPress);
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(251, 95);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(21, 13);
+            this.label10.TabIndex = 23;
+            this.label10.Text = "Ra";
             // 
             // groupBox5
             // 
@@ -180,9 +246,9 @@
             // 
             // textBox8
             // 
-            this.textBox8.Location = new System.Drawing.Point(176, 202);
+            this.textBox8.Location = new System.Drawing.Point(191, 202);
             this.textBox8.Name = "textBox8";
-            this.textBox8.Size = new System.Drawing.Size(368, 20);
+            this.textBox8.Size = new System.Drawing.Size(353, 20);
             this.textBox8.TabIndex = 19;
             // 
             // textBox7
@@ -302,6 +368,7 @@
             this.textBox1.Size = new System.Drawing.Size(83, 20);
             this.textBox1.TabIndex = 2;
             this.textBox1.Text = "1000";
+            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             this.textBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TextBox1_KeyPress);
             // 
             // label1
@@ -318,9 +385,9 @@
             this.label8.AutoSize = true;
             this.label8.Location = new System.Drawing.Point(3, 205);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(176, 13);
+            this.label8.Size = new System.Drawing.Size(182, 13);
             this.label8.TabIndex = 21;
-            this.label8.Text = "Путь к папке сохранения файла: ";
+            this.label8.Text = "Путь к папке сохранения файлов: ";
             // 
             // button1
             // 
@@ -574,6 +641,12 @@
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.TextBox textBox11;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.TextBox textBox9;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.TextBox textBox10;
+        private System.Windows.Forms.Label label10;
     }
 }
 

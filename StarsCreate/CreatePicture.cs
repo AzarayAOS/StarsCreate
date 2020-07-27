@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace StarsCreate
 {
@@ -9,6 +11,8 @@ namespace StarsCreate
     /// </summary>
     public class CreatePicture
     {
+        public List<Star> StarList;
+
         private int[,] PixValue16;          // массив значений пикселей 16 битного холста
 
         //private int[,] Noiz16;            // массив шума
@@ -37,7 +41,6 @@ namespace StarsCreate
         private bool fNoise;
         private bool fTrack;
         private bool fTrackTxt;
-
         public int Kolstars { get => kolstars; set => kolstars = value; }       // Количество генерируемых звёзд
 
         public int PodstConst { get => podstConst; set => podstConst = value; } // Подставка под матрицу
@@ -50,6 +53,10 @@ namespace StarsCreate
         public bool FNoise { get => fNoise; set => fNoise = value; }            // флаг необходимой генерации шума
         public bool FTrack { get => fTrack; set => fTrack = value; }            // флаг необходимости генерации трека
         public bool FTrackTxt { get => fTrackTxt; set => fTrackTxt = value; }   // флаг создания текстового файла с координатами трека
+
+        public double Ra { get; set; }
+        public double Dec { get; set; }
+        public double FOV { get; set; }
 
         /// <summary>
         /// конструктор класса генерации изображения
@@ -134,6 +141,58 @@ namespace StarsCreate
             bm = new Bitmap(W - 100, H - 100, System.Drawing.Imaging.PixelFormat.Format16bppGrayScale);
         }
 
+        public CreatePicture(
+            int w,
+            int h,
+            int kolstars,
+            int Noise,
+            int PodstConst,
+            float Et,
+            int spp,
+            float sigm,
+            string filename,
+            double ra,
+            double dec,
+            double fov,
+            List<Star> st,
+            bool FStar = true,
+            bool FNoise = true,
+            bool FTrack = true,
+            bool FTrackTxt = false
+            )
+        {
+            this.W = w + 100;
+            this.H = h + 100;
+            this.Kolstars = kolstars;
+            this.Noise = Noise;
+            this.PodstConst = PodstConst;
+            this.Et = Et;
+            this.Spp = spp;
+            this.Sigm = sigm;
+            this.FileName = filename;
+            this.FStar = FStar;
+            this.FNoise = FNoise;
+            this.FTrack = FTrack;
+            this.FTrackTxt = FTrackTxt;
+
+            Ra = ra;
+            Dec = dec;
+            FOV = fov;
+
+            StarList = st;
+
+            rd = new Random();
+
+            PixValue16 = new int[W, H];
+            PixTrack = new float[W * H];
+
+            for (int i = 0; i < W; i++)
+                for (int j = 0; j < H; j++)
+                    PixValue16[i, j] = this.PodstConst;
+
+            bm = new Bitmap(W - 100, H - 100, System.Drawing.Imaging.PixelFormat.Format16bppGrayScale);
+        }
+
         /// <summary>
         /// Возвращает массив пикселей
         /// </summary>
@@ -168,11 +227,11 @@ namespace StarsCreate
         /// </summary>
         public void StartCreate()
         {
-            if (FStar)
-                CreateStars();  // создание звёзд
-
             if (FNoise)
                 AddNoise();     // добавляем шум
+
+            if (FStar)
+                CreateStars();  // создание звёзд
 
             if (FTrack)
                 CreateTrack();  // создаём трек
@@ -530,9 +589,15 @@ namespace StarsCreate
         /// </summary>
         private void CreateStarEnerg(int xc, int yc, int r, double mgt)
         {
-            for (int i = xc - r > 0 ? xc - r : 0; i <= (xc + r < W ? xc + r : W - 1); i++)
-                for (int j = yc - r > 0 ? yc - r : 0; j <= (yc + r < H ? yc + r : H - 1); j++)
-                    Pixel_16(xc, yc, i, j, mgt);
+            Parallel.For(xc - r > 0 ? xc - r : 0, (xc + r < W ? xc + r : W - 1), i =>
+             {
+                 for (int j = yc - r > 0 ? yc - r : 0; j <= (yc + r < H ? yc + r : H - 1); j++)
+                     Pixel_16(xc, yc, i, j, mgt);
+             });
+
+            //for (int i = xc - r > 0 ? xc - r : 0; i <= (xc + r < W ? xc + r : W - 1); i++)
+            //    for (int j = yc - r > 0 ? yc - r : 0; j <= (yc + r < H ? yc + r : H - 1); j++)
+            //        Pixel_16(xc, yc, i, j, mgt);
         }
 
         /// <summary>
@@ -564,7 +629,7 @@ namespace StarsCreate
 
             //for (int i = 0; i < radius; i++)
             //    znach[i] = Gauss(x + i, radgaus, x);
-            CreateStarEnerg(x, y, radgaus * 10, mgt);
+            CreateStarEnerg(x, y, radgaus * 50, mgt);
             //for (int i = 0; i <= radgaus * 3; i++)
             //{
             //    //int temp = ValZnach(znach[0], Convert.ToInt32(mgt), znach[i - 1]);

@@ -30,10 +30,18 @@ namespace StarsCreate
         /// <summary>
         /// Инициализатор
         /// </summary>
-        /// <param name="Ui">Синхронизатор</param>
-        /// <param name="kol">Количество звёзд</param>
-        /// <param name="start">Начальное значение</param>
-        /// <param name="step">Прощение</param>
+        /// <param name="Ui">
+        /// Синхронизатор
+        /// </param>
+        /// <param name="kol">
+        /// Количество звёзд
+        /// </param>
+        /// <param name="start">
+        /// Начальное значение
+        /// </param>
+        /// <param name="step">
+        /// Прощение
+        /// </param>
         public ParamContent(SynchronizationContext Ui, int kol, int start, int step)
         {
             this.uiContext = Ui;
@@ -53,6 +61,8 @@ namespace StarsCreate
         private bool flagprocces;   // флаг запуска процесса генерации серии кадров
 
         private List<Thread> threads = new List<Thread>();
+
+        private List<Star> star = new List<Star>();
 
         private ParamContent[] Pc;
         public CreatePicture CreatePic;
@@ -94,6 +104,22 @@ namespace StarsCreate
             }
 
             //trackBar1.Maximum = Convert.ToInt32(textBox4.Text.Length > 0 ? textBox4.Text : "0");
+            //CreatePic = new CreatePicture(
+            //    Convert.ToInt32(textBox2.Text.Length > 0 ? textBox2.Text : "0"),        // ширина
+            //    Convert.ToInt32(textBox1.Text.Length > 0 ? textBox1.Text : "0"),        // высота
+            //    rd.Next(100, 500),                                                      // количество генерируемых звёзд
+            //    Convert.ToInt32(textBox3.Text.Length > 0 ? textBox3.Text : "0"),        // Шум
+            //    Convert.ToInt32(textBox4.Text.Length > 0 ? textBox4.Text : "0"),        // фоновая подставка
+            //    Convert.ToSingle(textBox5.Text.Length > 0 ? textBox5.Text : "0"),       // Энергия трека
+            //    spp,
+            //    sigm,
+            //    FileNameDir + "\\1",                        // пусть сохранения
+            //        checkBox1.Checked,                      // разрешение на генерацию звёзд
+            //        checkBox2.Checked,                      // разрешение на генерацию шума
+            //        checkBox3.Checked,                      // разрешение на генерацию трека
+            //        checkBox4.Checked                       // разрешение на запись координат трека в файл
+            //                             );
+
             CreatePic = new CreatePicture(
                 Convert.ToInt32(textBox2.Text.Length > 0 ? textBox2.Text : "0"),        // ширина
                 Convert.ToInt32(textBox1.Text.Length > 0 ? textBox1.Text : "0"),        // высота
@@ -104,6 +130,10 @@ namespace StarsCreate
                 spp,
                 sigm,
                 FileNameDir + "\\1",                        // пусть сохранения
+                Convert.ToSingle(textBox10.Text.Length > 0 ? textBox5.Text : "0"),
+                Convert.ToSingle(textBox9.Text.Length > 0 ? textBox5.Text : "0"),
+                Convert.ToSingle(textBox11.Text.Length > 0 ? textBox5.Text : "0"),
+                star,
                     checkBox1.Checked,                      // разрешение на генерацию звёзд
                     checkBox2.Checked,                      // разрешение на генерацию шума
                     checkBox3.Checked,                      // разрешение на генерацию трека
@@ -188,6 +218,28 @@ namespace StarsCreate
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            List<Star> CatalogStar = new List<Star>();
+            //CatalogStar.Add(new Star(-1, -1, -1, -1));  // заглушка, чтоб всё было с единицы
+            Char separator = System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator[0];
+            using (StreamReader sr = new StreamReader("valuesID.csv", System.Text.Encoding.Default))
+            {
+                string line;
+                line = sr.ReadLine();
+                //int i = 0;
+                while ((line = sr.ReadLine()) != null)
+                {
+                    string[] ch = line.Split(';');
+                    if (ch[0] != "" & ch[1] != "" & ch[2] != "" & ch[3] != "")
+                    {
+                        int id = Convert.ToInt32(ch[0]);
+                        double ra = Convert.ToSingle(ch[2].Replace('.', separator));
+                        double dec = Convert.ToSingle(ch[3].Replace('.', separator));
+                        double mgt = Convert.ToSingle(ch[1].Replace('.', separator));
+
+                        star.Add(new Star(id, ra, dec, mgt));
+                    }
+                }
+            }
         }
 
         private void TrackBar1_ValueChanged(object sender, EventArgs e)
@@ -472,6 +524,19 @@ namespace StarsCreate
 
                 for (int i = 0; i < KolParallel; i++)
                     threads[i].Join();
+            }
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+        }
+
+        private void textBox9_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            char number = e.KeyChar;
+            if (!Char.IsDigit(number) && number != 8 && number != 46) // цифры и клавиша BackSpace
+            {
+                e.Handled = true;
             }
         }
     }
